@@ -25,6 +25,15 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	UInputAction* MoveAction;
+	
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* LookAction;
+	UPROPERTY(EditDefaultsOnly)
+	float LookSensitivity;
+
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* JumpAction;
+	
 	UPROPERTY(EditDefaultsOnly)
 	UInputMappingContext* InputMappingContext;
 
@@ -37,4 +46,6 @@ public:
 
 private:
 	void Move(const FInputActionValue& Value);
+	void Look(const FInputActionValue& Value);
+	void Jump(const FInputActionValue& Value);
 };

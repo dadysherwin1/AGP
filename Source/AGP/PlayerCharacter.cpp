@@ -2,6 +2,7 @@
 
 
 #include "PlayerCharacter.h"
+
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 
@@ -46,6 +47,8 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	if (UEnhancedInputComponent* Input = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
+		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
+		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Jump);
 	}
 }
 
@@ -57,8 +60,20 @@ void APlayerCharacter::Move(const FInputActionValue& Value)
 	// get forward and right direction of the character, in world space
 	const FVector ForwardVector = GetActorForwardVector();
 	const FVector RightVector = GetActorRightVector();
-
+	
 	// use above values to move character
 	AddMovementInput(ForwardVector, MovementVector.X);
 	AddMovementInput(RightVector, MovementVector.Y);
+}
+
+void APlayerCharacter::Look(const FInputActionValue& Value)
+{
+	const FVector2D LookVector = Value.Get<FVector2D>() * LookSensitivity;
+	AddControllerYawInput(LookVector.X);
+	AddControllerPitchInput(LookVector.Y);
+}
+
+void APlayerCharacter::Jump(const FInputActionValue& Value)
+{
+	Super::Jump();
 }
