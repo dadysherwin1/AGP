@@ -25,17 +25,20 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly)
 	UInputAction* MoveAction;
-	
 	UPROPERTY(EditDefaultsOnly)
 	UInputAction* LookAction;
 	UPROPERTY(EditDefaultsOnly)
 	float LookSensitivity;
-
 	UPROPERTY(EditDefaultsOnly)
 	UInputAction* JumpAction;
 	
 	UPROPERTY(EditDefaultsOnly)
 	UInputMappingContext* InputMappingContext;
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnWeaponEquip(bool bEquipGun);
+	
+	bool bHasWeaponEquipped = false;
 
 public:	
 	// Called every frame
@@ -43,6 +46,10 @@ public:
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+	UFUNCTION(BlueprintCallable)
+	bool HasWeapon();
+	void EquipWeapon(bool bEquipGun);
 
 private:
 	void Move(const FInputActionValue& Value);

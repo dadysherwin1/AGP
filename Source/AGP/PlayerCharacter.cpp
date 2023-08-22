@@ -37,6 +37,9 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	
+	const FRotator Rotation = FRotator(GetController()->GetControlRotation().Pitch,0,0);
+	GetMesh()->SetRelativeRotation(Rotation);
 }
 
 // Called to bind functionality to input
@@ -50,6 +53,26 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Jump);
 	}
+}
+
+bool APlayerCharacter::HasWeapon()
+{
+	return bHasWeaponEquipped;
+}
+
+void APlayerCharacter::EquipWeapon(bool bEquipGun)
+{
+	bHasWeaponEquipped = bEquipGun;
+	if (bEquipGun)
+	{
+		UE_LOG(LogTemp, Display, TEXT("Player has equipped weapon"));
+	}
+	else
+	{
+		UE_LOG(LogTemp, Display, TEXT("Player has unequipped weapon"));
+	}
+	
+	OnWeaponEquip(bEquipGun);
 }
 
 void APlayerCharacter::Move(const FInputActionValue& Value)
