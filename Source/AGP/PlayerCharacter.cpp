@@ -5,6 +5,7 @@
 
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
+#include "CoreFwd.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -37,8 +38,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	double Pitch = GetController()->GetControlRotation().Pitch;
+	UE_LOG(LogTemp, Display, TEXT("%f"), Pitch);
+	const FRotator Rotation = FRotator(Pitch,0,0);
+
 	
-	const FRotator Rotation = FRotator(GetController()->GetControlRotation().Pitch,0,0);
 	GetMesh()->SetRelativeRotation(Rotation);
 }
 
