@@ -40,10 +40,16 @@ void APlayerCharacter::Tick(float DeltaTime)
 
 	double Pitch = GetController()->GetControlRotation().Pitch;
 	UE_LOG(LogTemp, Display, TEXT("%f"), Pitch);
-	const FRotator Rotation = FRotator(Pitch,0,0);
+	// FTransform Transform = FTransform(FRotator(Pitch,0,0));
+	// Transform *= FTransform(FVector(0,0,-110));
 
+	FTransform Transform = FTransform(FVector(0,0,-155));
+	Transform *= FTransform(FRotator(Pitch,0,0));
+	Transform *= FTransform(FVector(0,0,60));
 	
-	GetMesh()->SetRelativeRotation(Rotation);
+	UE_LOG(LogTemp, Display, TEXT("%s"), *Transform.GetTranslation().ToString());
+	
+	GetMesh()->SetRelativeTransform(Transform);
 }
 
 // Called to bind functionality to input
