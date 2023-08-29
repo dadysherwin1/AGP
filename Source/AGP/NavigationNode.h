@@ -17,6 +17,7 @@ public:
 
 	virtual bool ShouldTickIfViewportsOnly() const override;
 	virtual TArray<ANavigationNode*> GetConnectedNodes();
+	float GetDistanceTo(ANavigationNode* OtherNode);
 
 protected:
 	// Called when the game starts or when spawned

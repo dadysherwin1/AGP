@@ -23,6 +23,11 @@ TArray<ANavigationNode*> ANavigationNode::GetConnectedNodes()
 	return ConnectedNodes;
 }
 
+float ANavigationNode::GetDistanceTo(ANavigationNode* OtherNode)
+{
+	return FVector::Distance(GetActorLocation(), OtherNode->GetActorLocation());
+}
+
 // Called when the game starts or when spawned
 void ANavigationNode::BeginPlay()
 {
