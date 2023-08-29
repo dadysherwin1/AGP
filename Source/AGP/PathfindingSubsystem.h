@@ -29,4 +29,6 @@ private:
 
 	ANavigationNode* GetRandomNode();
 	ANavigationNode* FindNearestNode(const FVector& TargetLocation);
+	TArray<FVector> GetPath(ANavigationNode* Node1, ANavigationNode* Node2);
+	
 };

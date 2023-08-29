@@ -5,12 +5,30 @@
 
 #include "EngineUtils.h"
 #include "NavigationNode.h"
+#include <queue>
+
+struct FAStarNode
+{
+	float G = std::numeric_limits<float>::max();;
+	float H = 0;
+	float GetF() const
+	{
+		return G + H;
+	}
+	ANavigationNode CameFrom;
+
+	bool operator>(const FAStarNode& Other) const
+	{
+		return GetF() > Other.GetF();
+	}
+};
 
 void UPathfindingSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
 
 	PopulateNodes();
+	GetPath(GetRandomNode(), GetRandomNode());
 }
 
 TArray<FVector> UPathfindingSubsystem::GetRandomPath(const FVector& StartLocation)
@@ -56,4 +74,11 @@ ANavigationNode* UPathfindingSubsystem::FindNearestNode(const FVector& TargetLoc
 	}
 
 	return ClosestNode;
+}
+
+TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* Node1, ANavigationNode* Node2)
+{
+	// std::priority_queue<FAStarNode, std::vector<FAStarNode>, std::greater<FAStarNode>> Queue;
+	FAStarNode Yo {3,3};
+	return *new TArray<FVector>;
 }

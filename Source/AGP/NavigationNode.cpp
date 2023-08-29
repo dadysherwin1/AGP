@@ -18,6 +18,11 @@ bool ANavigationNode::ShouldTickIfViewportsOnly() const
 	return true;
 }
 
+TArray<ANavigationNode*> ANavigationNode::GetConnectedNodes()
+{
+	return ConnectedNodes;
+}
+
 // Called when the game starts or when spawned
 void ANavigationNode::BeginPlay()
 {

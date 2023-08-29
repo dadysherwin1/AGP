@@ -16,6 +16,7 @@ public:
 	ANavigationNode();
 
 	virtual bool ShouldTickIfViewportsOnly() const override;
+	virtual TArray<ANavigationNode*> GetConnectedNodes();
 
 protected:
 	// Called when the game starts or when spawned
