@@ -39,15 +39,12 @@ void APlayerCharacter::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	double Pitch = GetController()->GetControlRotation().Pitch;
-	UE_LOG(LogTemp, Display, TEXT("%f"), Pitch);
 	// FTransform Transform = FTransform(FRotator(Pitch,0,0));
 	// Transform *= FTransform(FVector(0,0,-110));
 
 	FTransform Transform = FTransform(FVector(0,0,-155));
 	Transform *= FTransform(FRotator(Pitch,0,0));
 	Transform *= FTransform(FVector(0,0,60));
-	
-	UE_LOG(LogTemp, Display, TEXT("%s"), *Transform.GetTranslation().ToString());
 	
 	GetMesh()->SetRelativeTransform(Transform);
 }
