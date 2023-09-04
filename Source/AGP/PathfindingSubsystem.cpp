@@ -1,11 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
 #include "PathfindingSubsystem.h"
 
 #include "EngineUtils.h"
 #include "NavigationNode.h"
+#include "Algo/Reverse.h"
 #include <queue>
+#include <limits>
 
 struct FAStarNode
 {
@@ -24,10 +25,10 @@ struct FAStarNode
 		return GetF() > Other.GetF();
 	}
 
-	bool operator!=(const FAStarNode& Other) const
-	{
-		return this != nullptr;
-	}
+	// bool operator!=(const FAStarNode& Other) const
+	// {
+	// 	return this != nullptr;
+	// }
 };
 
 void UPathfindingSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -35,12 +36,14 @@ void UPathfindingSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 	Super::OnWorldBeginPlay(InWorld);
 
 	PopulateNodes();
-	GetPath(GetRandomNode(), GetRandomNode());
+
 }
 
 TArray<FVector> UPathfindingSubsystem::GetRandomPath(const FVector& StartLocation)
 {
-	return *new TArray<FVector>;
+	ANavigationNode* Start = FindNearestNode(StartLocation);
+	ANavigationNode* End = GetRandomNode();
+	return GetPath(Start, End);
 }
 
 void UPathfindingSubsystem::PopulateNodes()
@@ -85,7 +88,7 @@ ANavigationNode* UPathfindingSubsystem::FindNearestNode(const FVector& TargetLoc
 
 TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* Node1, ANavigationNode* Node2)
 {
-	std::priority_queue<FAStarNode&, std::vector<FAStarNode>, std::greater<FAStarNode>> Queue;
+	std::priority_queue<FAStarNode, std::vector<FAStarNode>, std::greater<FAStarNode>> Queue;
 	FAStarNode Start = {Node1, nullptr, 0, Node1->GetDistanceTo(Node2)};
 	Queue.push(Start); // FACK
 
@@ -98,9 +101,7 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* Node1, ANavigati
 		Queue.pop();
 
 		if (Current.Node == Node2)
-		{
-			return ReconstructPath(Current);
-		}
+			return ReconstructPath(&Current);
 		
 		for (ANavigationNode* NeighbourNode : Current.Node->GetConnectedNodes())
 		{
@@ -113,15 +114,17 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* Node1, ANavigati
 
 				// overwrite node if we have a better path to it
 				if (Neighbour.G < G) continue;
+				
 				Neighbour.G = G;
 				Neighbour.CameFrom = &Current;
+				Queue.push(Neighbour); // adds a duplicate to the queue, but with lower score
 			}
 			else 
 			{
 				// new node
-				Neighbour = FAStarNode{NeighbourNode, &Current, G,
-					NeighbourNode->GetDistanceTo(Node2)};
+				Neighbour = FAStarNode{NeighbourNode, &Visited[Current.Node], G,NeighbourNode->GetDistanceTo(Node2)};
 				Visited.Add(NeighbourNode, Neighbour);
+				Queue.push(Neighbour);
 			}
 		}	
 	}
@@ -129,17 +132,22 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* Node1, ANavigati
 	return *new TArray<FVector>;
 }
 
-TArray<FVector> UPathfindingSubsystem::ReconstructPath(const FAStarNode& End)
+TArray<FVector> UPathfindingSubsystem::ReconstructPath(FAStarNode* End)
 {
 	TArray<FVector> Path;
-	Path.Add(End.Node->GetActorLocation());
-	FAStarNode* Current = End.CameFrom;
-
+	Path.Add(End->Node->GetActorLocation());
+	FAStarNode* Current = End->CameFrom;
+	uint8 Counter = 0;
 	while (Current != nullptr)
 	{
+		Counter += 1;
+		// UE_LOG(LogTemp, Display, TEXT("%s"), *Current->Node->GetActorNameOrLabel());
 		Path.Add(Current->Node->GetActorLocation());
 		Current = Current->CameFrom;
+		if (Counter > 15)
+			break;
 	}
 
-	return Path; // it'll be in reverse
+	// Algo::Reverse(Path);
+	return Path;
 }

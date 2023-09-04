@@ -6,6 +6,8 @@
 #include "GameFramework/Character.h"
 #include "EnemyCharacter.generated.h"
 
+class UPathfindingSubsystem;
+
 UCLASS()
 class AGP_API AEnemyCharacter : public ACharacter
 {
@@ -19,6 +21,10 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	UPROPERTY();
+	UPathfindingSubsystem* PathfindingSubsystem;
+	UPROPERTY(VisibleAnywhere);
+	TArray<FVector> CurrentPath;
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

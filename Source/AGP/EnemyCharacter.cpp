@@ -3,6 +3,8 @@
 
 #include "EnemyCharacter.h"
 
+#include "PathfindingSubsystem.h"
+
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
 {
@@ -15,14 +17,24 @@ AEnemyCharacter::AEnemyCharacter()
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	PathfindingSubsystem = GetWorld()->GetSubsystem<UPathfindingSubsystem>();
+	CurrentPath = PathfindingSubsystem->GetRandomPath(GetActorLocation());
 }
 
 // Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	
+	if (FVector::Distance(GetActorLocation(), CurrentPath.Last()) <= 150)
+	{
+		CurrentPath.Pop();
+		if (CurrentPath.Num() == 0)
+			CurrentPath = PathfindingSubsystem->GetRandomPath(GetActorLocation());;
+	}
 
+	const FVector Direction = CurrentPath.Last() - GetActorLocation();
+	AddMovementInput(Direction);
 }
 
 // Called to bind functionality to input

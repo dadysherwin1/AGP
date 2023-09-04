@@ -54,5 +54,5 @@ public:
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
-	void Jump(const FInputActionValue& Value);
+	void MyJump(const FInputActionValue& Value);
 };
