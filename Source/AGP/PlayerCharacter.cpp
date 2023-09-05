@@ -62,26 +62,6 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 	}
 }
 
-bool APlayerCharacter::HasWeapon()
-{
-	return bHasWeaponEquipped;
-}
-
-void APlayerCharacter::EquipWeapon(bool bEquipGun)
-{
-	bHasWeaponEquipped = bEquipGun;
-	if (bEquipGun)
-	{
-		UE_LOG(LogTemp, Display, TEXT("Player has equipped weapon"));
-	}
-	else
-	{
-		UE_LOG(LogTemp, Display, TEXT("Player has unequipped weapon"));
-	}
-	
-	OnWeaponEquip(bEquipGun);
-}
-
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	// get input movement direction, in object space

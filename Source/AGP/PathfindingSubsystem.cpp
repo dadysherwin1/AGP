@@ -8,9 +8,12 @@
 #include <queue>
 #include <limits>
 
+USTRUCT()
 struct FAStarNode
 {
+	UPROPERTY()
 	ANavigationNode* Node;
+	UPROPERTY()
 	FAStarNode* CameFrom;
 	float G = std::numeric_limits<float>::max();
 	float H;
@@ -24,11 +27,6 @@ struct FAStarNode
 	{
 		return GetF() > Other.GetF();
 	}
-
-	// bool operator!=(const FAStarNode& Other) const
-	// {
-	// 	return this != nullptr;
-	// }
 };
 
 void UPathfindingSubsystem::OnWorldBeginPlay(UWorld& InWorld)
@@ -43,6 +41,10 @@ TArray<FVector> UPathfindingSubsystem::GetRandomPath(const FVector& StartLocatio
 {
 	ANavigationNode* Start = FindNearestNode(StartLocation);
 	ANavigationNode* End = GetRandomNode();
+	if (Start->GetActorNameOrLabel() == End->GetActorNameOrLabel())
+	{
+		UE_LOG(LogTemp, Display, TEXT("SAME NODE DUMBAAAAASS"));
+	}
 	return GetPath(Start, End);
 }
 
@@ -86,68 +88,96 @@ ANavigationNode* UPathfindingSubsystem::FindNearestNode(const FVector& TargetLoc
 	return ClosestNode;
 }
 
-TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* Node1, ANavigationNode* Node2)
+TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavigationNode* EndNode)
 {
-	std::priority_queue<FAStarNode, std::vector<FAStarNode>, std::greater<FAStarNode>> Queue;
-	FAStarNode Start = {Node1, nullptr, 0, Node1->GetDistanceTo(Node2)};
-	Queue.push(Start); // FACK
-
-	TMap<ANavigationNode*, FAStarNode> Visited;
-	Visited.Add(Node1, Start);
-
-	while (!Queue.empty())
+	if (!StartNode || !EndNode)
 	{
-		FAStarNode Current = Queue.top();
-		Queue.pop();
-
-		if (Current.Node == Node2)
-			return ReconstructPath(&Current);
-		
-		for (ANavigationNode* NeighbourNode : Current.Node->GetConnectedNodes())
-		{
-			FAStarNode Neighbour;
-			float G = Current.G + Current.Node->GetDistanceTo(NeighbourNode);
-			if (Visited.Contains(NeighbourNode)) 
-			{
-				// already visited
-				Neighbour = Visited[NeighbourNode];
-
-				// overwrite node if we have a better path to it
-				if (Neighbour.G < G) continue;
-				
-				Neighbour.G = G;
-				Neighbour.CameFrom = &Current;
-				Queue.push(Neighbour); // adds a duplicate to the queue, but with lower score
-			}
-			else 
-			{
-				// new node
-				Neighbour = FAStarNode{NeighbourNode, &Visited[Current.Node], G,NeighbourNode->GetDistanceTo(Node2)};
-				Visited.Add(NeighbourNode, Neighbour);
-				Queue.push(Neighbour);
-			}
-		}	
+		UE_LOG(LogTemp, Error, TEXT("Either the start or end node are nullptrs."))
+		return TArray<FVector>();
 	}
+
+	// Setup the open set and add the start node.
+	TArray<ANavigationNode*> OpenSet;
+	OpenSet.Add(StartNode);
+
+	// Setup the maps that will hold the GScores, HScores and CameFrom
+	TMap<ANavigationNode*, float> GScores, HScores;
+	TMap<ANavigationNode*, ANavigationNode*> CameFrom;
+	// You could pre-populate the GScores and HScores maps with all of the GScores (at infinity) and HScores here by looping over
+	// all the nodes in the Nodes array. However it is more efficient to only calculate these when you need them
+	// as some nodes might not be explored when finding a path.
+
+	// Setup the start nodes G and H score.
+	GScores.Add(StartNode, 0);
+	HScores.Add(StartNode, FVector::Distance(StartNode->GetActorLocation(), EndNode->GetActorLocation()));
+	CameFrom.Add(StartNode, nullptr);
+
+	while (!OpenSet.IsEmpty())
+	{
+		// Find the node in the open set with the lowest FScore.
+		ANavigationNode* CurrentNode = OpenSet[0]; // We know this exists because the OpenSet is not empty.
+		for (int32 i = 1; i < OpenSet.Num(); i++)
+		{
+			// We can be sure that all the nodes in the open set have already had their GScores and HScores calculated.
+			if (GScores[OpenSet[i]] + HScores[OpenSet[i]] < GScores[CurrentNode] + HScores[CurrentNode])
+			{
+				CurrentNode = OpenSet[i];
+			}
+		}
+
+		// Remove the current node from the OpenSet
+		OpenSet.Remove(CurrentNode);
+
+		if (CurrentNode == EndNode)
+		{
+			// Then we have found the path so reconstruct it and get the positions of each of the nodes in the path.
+			UE_LOG(LogTemp, Display, TEXT("PATH FOUND"))
+			return ReconstructPath(CameFrom, EndNode);
+		}
+
+		for (ANavigationNode* ConnectedNode : CurrentNode->GetConnectedNodes())
+		{
+			if (!ConnectedNode) continue; // Failsafe if the ConnectedNode is a nullptr.
+			const float TentativeGScore = GScores[CurrentNode] + FVector::Distance(CurrentNode->GetActorLocation(), ConnectedNode->GetActorLocation());
+			// Because we didn't setup all the scores and came from at the start, we need to check if the connected node has a gscore
+			// already otherwise set it. If it doesn't have a gscore then it won't have all the other things either so initialise them as well.
+			if (!GScores.Contains(ConnectedNode))
+			{
+				GScores.Add(ConnectedNode, UE_MAX_FLT);
+				HScores.Add(ConnectedNode, FVector::Distance(ConnectedNode->GetActorLocation(), EndNode->GetActorLocation()));
+				CameFrom.Add(ConnectedNode, nullptr);
+			}
+
+			// Then update this nodes scores and came from if the tentative g score is lower than the current g score.
+			if (TentativeGScore < GScores[ConnectedNode])
+			{
+				CameFrom[ConnectedNode] = CurrentNode;
+				GScores[ConnectedNode] = TentativeGScore;
+				// HScore is already set when adding the node to the HScores map.
+				// Then add connected node to the open set if it isn't already in there.
+				if (!OpenSet.Contains(ConnectedNode))
+				{
+					OpenSet.Add(ConnectedNode);
+				}
+			}
+		}
+	}
+
+	// If we get here, then no path has been found so return an empty array.
+	return TArray<FVector>();
 	
-	return *new TArray<FVector>;
 }
 
-TArray<FVector> UPathfindingSubsystem::ReconstructPath(FAStarNode* End)
+TArray<FVector> UPathfindingSubsystem::ReconstructPath(const TMap<ANavigationNode*, ANavigationNode*>& CameFromMap, ANavigationNode* EndNode)
 {
-	TArray<FVector> Path;
-	Path.Add(End->Node->GetActorLocation());
-	FAStarNode* Current = End->CameFrom;
-	uint8 Counter = 0;
-	while (Current != nullptr)
+	TArray<FVector> NodeLocations;
+
+	const ANavigationNode* NextNode = EndNode;
+	while(NextNode)
 	{
-		Counter += 1;
-		// UE_LOG(LogTemp, Display, TEXT("%s"), *Current->Node->GetActorNameOrLabel());
-		Path.Add(Current->Node->GetActorLocation());
-		Current = Current->CameFrom;
-		if (Counter > 15)
-			break;
+		NodeLocations.Push(NextNode->GetActorLocation());
+		NextNode = CameFromMap[NextNode];
 	}
 
-	// Algo::Reverse(Path);
-	return Path;
+	return NodeLocations;
 }

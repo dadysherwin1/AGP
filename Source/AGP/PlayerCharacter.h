@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "BaseCharacter.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
@@ -11,7 +12,7 @@ class UInputAction;
 class UInputMappingContext;
 
 UCLASS()
-class AGP_API APlayerCharacter : public ACharacter
+class AGP_API APlayerCharacter : public ABaseCharacter
 {
 	GENERATED_BODY()
 
@@ -35,21 +36,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UInputMappingContext* InputMappingContext;
 
-	UFUNCTION(BlueprintImplementableEvent)
-	void OnWeaponEquip(bool bEquipGun);
-	
-	bool bHasWeaponEquipped = false;
-
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
-	UFUNCTION(BlueprintCallable)
-	bool HasWeapon();
-	void EquipWeapon(bool bEquipGun);
 
 private:
 	void Move(const FInputActionValue& Value);

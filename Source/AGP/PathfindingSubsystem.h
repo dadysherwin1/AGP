@@ -31,5 +31,5 @@ private:
 	ANavigationNode* GetRandomNode();
 	ANavigationNode* FindNearestNode(const FVector& TargetLocation);
 	TArray<FVector> GetPath(ANavigationNode* Node1, ANavigationNode* Node2);
-	TArray<FVector> ReconstructPath(FAStarNode* End);
+	inline TArray<FVector> ReconstructPath(const TMap<ANavigationNode*, ANavigationNode*>& CameFromMap, ANavigationNode* EndNode);
 };
