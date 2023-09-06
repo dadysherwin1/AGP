@@ -22,13 +22,10 @@ void ABaseCharacter::BeginPlay()
 
 bool ABaseCharacter::Fire(const FVector& FireAtLocation)
 {
-	UE_LOG(LogTemp, Log, TEXT("Test1"));
 	if (TimeSinceLastShot < MinTimeBetweenShots)
 	{
 		return false;
 	}
-
-	UE_LOG(LogTemp, Log, TEXT("Test2"));
 
 	FHitResult OutHit;
 	const FVector Start = GetActorLocation();
@@ -39,19 +36,16 @@ bool ABaseCharacter::Fire(const FVector& FireAtLocation)
 	{
 		if (Cast<ABaseCharacter>(OutHit.GetActor()))
 		{
-			UE_LOG(LogTemp, Log, TEXT("Hit someone"));
-			DrawDebugLine(GetWorld(), Start, OutHit.Location, FColor::Green, false, 1, 0, 1);
+			DrawDebugLine(GetWorld(), Start, OutHit.Location, FColor::Green, false, 1, 0, 2);
 		}
 		else
 		{
-			UE_LOG(LogTemp, Log, TEXT("Hit wall"));
-			DrawDebugLine(GetWorld(), Start, OutHit.Location, FColor::Orange, false, 1, 0, 1);
+			DrawDebugLine(GetWorld(), Start, OutHit.Location, FColor::Orange, false, 1, 0, 2);
 		}
 	}
 	else
 	{
-		UE_LOG(LogTemp, Log, TEXT("Hit nothing"));
-		DrawDebugLine(GetWorld(), Start, FireAtLocation, FColor::Red, false, 1, 0, 1);
+		DrawDebugLine(GetWorld(), Start, FireAtLocation, FColor::Red, false, 1, 0, 2);
 	}
 
 	TimeSinceLastShot = 0.0f;

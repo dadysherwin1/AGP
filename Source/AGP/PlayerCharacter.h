@@ -49,5 +49,5 @@ private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void MyJump(const FInputActionValue& Value);
-	void Fire(const FInputActionValue& Value);
+	void FireWeapon(const FInputActionValue& Value);
 };
