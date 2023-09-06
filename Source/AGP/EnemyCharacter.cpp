@@ -3,7 +3,7 @@
 
 #include "EnemyCharacter.h"
 
-#include "PathfindingSubsystem.h"
+#include "Pathfinding/PathfindingSubsystem.h"
 
 // Sets default values
 AEnemyCharacter::AEnemyCharacter()
