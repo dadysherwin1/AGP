@@ -48,6 +48,16 @@ TArray<FVector> UPathfindingSubsystem::GetRandomPath(const FVector& StartLocatio
 	return GetPath(Start, End);
 }
 
+TArray<FVector> UPathfindingSubsystem::GetPath(const FVector& StartLocation, const FVector& TargetLocation)
+{
+	return GetPath(FindNearestNode(StartLocation), FindNearestNode(TargetLocation));
+}
+
+TArray<FVector> UPathfindingSubsystem::GetPathAway(const FVector& StartLocation, const FVector& RepellingLocation)
+{
+	return GetPath(FindNearestNode(StartLocation), FindFurthestNode(RepellingLocation));
+}
+
 void UPathfindingSubsystem::PopulateNodes()
 {
 	Nodes.Empty();
@@ -86,6 +96,24 @@ ANavigationNode* UPathfindingSubsystem::FindNearestNode(const FVector& TargetLoc
 	}
 
 	return ClosestNode;
+}
+
+ANavigationNode* UPathfindingSubsystem::FindFurthestNode(const FVector& TargetLocation)
+{
+	ANavigationNode* FurthestNode = nullptr;
+	float FurthestDistance = 0;
+	for (ANavigationNode* Node : Nodes)
+	{
+		float Distance = FVector::Distance(TargetLocation, Node->GetActorLocation());
+		
+		if (Distance > FurthestDistance)
+		{
+			FurthestNode = Node;
+			FurthestDistance = Distance;
+		}
+	}
+
+	return FurthestNode;
 }
 
 TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavigationNode* EndNode)
@@ -131,7 +159,6 @@ TArray<FVector> UPathfindingSubsystem::GetPath(ANavigationNode* StartNode, ANavi
 		if (CurrentNode == EndNode)
 		{
 			// Then we have found the path so reconstruct it and get the positions of each of the nodes in the path.
-			UE_LOG(LogTemp, Display, TEXT("PATH FOUND"))
 			return ReconstructPath(CameFrom, EndNode);
 		}
 

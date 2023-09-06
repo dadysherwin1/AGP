@@ -20,7 +20,9 @@ public:
 	virtual void OnWorldBeginPlay(UWorld& InWorld) override;
 	
 	TArray<FVector> GetRandomPath(const FVector& StartLocation);
-
+	TArray<FVector> GetPath(const FVector& StartLocation, const FVector& TargetLocation);
+	TArray<FVector> GetPathAway(const FVector& StartLocation, const FVector& RepellingLocation);
+	
 protected:
 	UPROPERTY()
 	TArray<ANavigationNode*> Nodes;
@@ -30,6 +32,7 @@ private:
 	
 	ANavigationNode* GetRandomNode();
 	ANavigationNode* FindNearestNode(const FVector& TargetLocation);
+	ANavigationNode* FindFurthestNode(const FVector& TargetLocation);
 	TArray<FVector> GetPath(ANavigationNode* Node1, ANavigationNode* Node2);
 	inline TArray<FVector> ReconstructPath(const TMap<ANavigationNode*, ANavigationNode*>& CameFromMap, ANavigationNode* EndNode);
 };

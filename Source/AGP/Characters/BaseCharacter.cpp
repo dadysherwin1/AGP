@@ -3,6 +3,8 @@
 
 #include "BaseCharacter.h"
 
+#include "HealthComponent.h"
+
 // Sets default values
 ABaseCharacter::ABaseCharacter()
 {
@@ -11,6 +13,7 @@ ABaseCharacter::ABaseCharacter()
 	
 	BulletStartPosition = CreateDefaultSubobject<USceneComponent>(TEXT("BulletStartPosition"));
 	BulletStartPosition->SetupAttachment(RootComponent);
+	UHealthComponent* HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("HealthComponent"));
 }
 
 // Called when the game starts or when spawned
@@ -34,9 +37,10 @@ bool ABaseCharacter::Fire(const FVector& FireAtLocation)
 	if (GetWorld()->LineTraceSingleByChannel(OutHit, Start,
 		FireAtLocation, ECC_WorldStatic, Params))
 	{
-		if (Cast<ABaseCharacter>(OutHit.GetActor()))
+		if (ABaseCharacter* Character = Cast<ABaseCharacter>(OutHit.GetActor()))
 		{
 			DrawDebugLine(GetWorld(), Start, OutHit.Location, FColor::Green, false, 1, 0, 2);
+			Character->GetComponentByClass<UHealthComponent>()->ApplyDamage(WeaponDamage);
 		}
 		else
 		{

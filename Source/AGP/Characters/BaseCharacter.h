@@ -3,29 +3,40 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "BaseCharacter.h"
 #include "GameFramework/Character.h"
-#include "EnemyCharacter.generated.h"
+#include "BaseCharacter.generated.h"
 
-class UPathfindingSubsystem;
+class UHealthComponent;
 
 UCLASS()
-class AGP_API AEnemyCharacter : public ABaseCharacter
+class AGP_API ABaseCharacter : public ACharacter
 {
 	GENERATED_BODY()
 
 public:
 	// Sets default values for this character's properties
-	AEnemyCharacter();
+	ABaseCharacter();
+
+	UFUNCTION(BlueprintCallable)
+	bool HasWeapon();
+	void EquipWeapon(bool bEquipGun);
 
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY();
-	UPathfindingSubsystem* PathfindingSubsystem;
-	UPROPERTY(VisibleAnywhere);
-	TArray<FVector> CurrentPath;
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnWeaponEquip(bool bEquipGun);
+	bool bHasWeaponEquipped = false;
+
+	// week 5: firing
+	float TimeSinceLastShot = 0.0f;
+	float MinTimeBetweenShots = 0.2f;
+	float WeaponDamage = 10.0f;
+	UPROPERTY(VisibleAnywhere)
+	USceneComponent* BulletStartPosition;
+	bool Fire(const FVector& FireAtLocation);
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

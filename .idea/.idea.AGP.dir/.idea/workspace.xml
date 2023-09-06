@@ -8,14 +8,24 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e01b02a2-e5cc-4f42-b03d-24317a4ec4dc" name="Changes" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/.idea.AGP.dir/.idea/.gitignore" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/AGP.uproject" beforeDir="false" afterPath="$PROJECT_DIR$/AGP.uproject" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/.idea.AGP.dir/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/.idea.AGP.dir/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_EnemyCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_EnemyCharacter.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Blueprints/BP_PlayerCharacter.uasset" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Blueprints/BP_PlayerCharacter.uasset" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Content/Levels/ShooterMap.umap" beforeDir="false" afterPath="$PROJECT_DIR$/Content/Levels/ShooterMap.umap" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/AGP/BaseCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/BaseCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/AGP/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/PlayerCharacter.cpp" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/Source/AGP/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/PlayerCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/AGP.Build.cs" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/AGP.Build.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/BaseCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Characters/BaseCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/BaseCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Characters/BaseCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/EnemyCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Characters/EnemyCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/EnemyCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Characters/EnemyCharacter.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/Pathfinding/PathfindingSubsystem.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Pathfinding/PathfindingSubsystem.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/Pathfinding/PathfindingSubsystem.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Pathfinding/PathfindingSubsystem.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/PickupBounceComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Pickups/PickupBounceComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/PickupBounceComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Pickups/PickupBounceComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/PickupRotatorComponent.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Pickups/PickupRotatorComponent.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/PickupRotatorComponent.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Pickups/PickupRotatorComponent.h" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/Pickups/WeaponPickup.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Pickups/WeaponPickup.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/PlayerCharacter.cpp" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Characters/PlayerCharacter.cpp" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Source/AGP/PlayerCharacter.h" beforeDir="false" afterPath="$PROJECT_DIR$/Source/AGP/Characters/PlayerCharacter.h" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -113,6 +123,7 @@
       <updated>1693971538100</updated>
       <workItem from="1693971539931" duration="5641000" />
       <workItem from="1693979764785" duration="796000" />
+      <workItem from="1693986864647" duration="7208000" />
     </task>
     <servers />
   </component>
