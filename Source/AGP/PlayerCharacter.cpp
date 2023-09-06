@@ -6,6 +6,7 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "CoreFwd.h"
+#include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
 APlayerCharacter::APlayerCharacter()
@@ -59,6 +60,7 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		Input->BindAction(MoveAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Move);
 		Input->BindAction(LookAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Look);
 		Input->BindAction(JumpAction, ETriggerEvent::Triggered, this, &APlayerCharacter::MyJump);
+		Input->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Fire);
 	}
 }
 
@@ -86,4 +88,17 @@ void APlayerCharacter::Look(const FInputActionValue& Value)
 void APlayerCharacter::MyJump(const FInputActionValue& Value)
 {
 	Super::Jump();
+}
+
+void APlayerCharacter::Fire(const FInputActionValue& Value)
+{
+	
+	FVector Location;
+	FRotator Rotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(Location, Rotation);
+	const FVector ForwardVector = UKismetMathLibrary::GetForwardVector(Rotation);
+	UE_LOG(LogTemp, Log, TEXT("Test-1"));
+	if (BulletStartPosition)
+		UE_LOG(LogTemp, Log, TEXT("TestBROOO?"));
+		Super::Fire(GetActorLocation() + 10000 * ForwardVector);
 }

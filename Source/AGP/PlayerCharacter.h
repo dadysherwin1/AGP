@@ -32,6 +32,8 @@ protected:
 	float LookSensitivity;
 	UPROPERTY(EditDefaultsOnly)
 	UInputAction* JumpAction;
+	UPROPERTY(EditDefaultsOnly)
+	UInputAction* FireAction;
 	
 	UPROPERTY(EditDefaultsOnly)
 	UInputMappingContext* InputMappingContext;
@@ -47,4 +49,5 @@ private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);
 	void MyJump(const FInputActionValue& Value);
+	void Fire(const FInputActionValue& Value);
 };
