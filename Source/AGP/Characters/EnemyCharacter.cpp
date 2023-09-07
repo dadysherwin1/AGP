@@ -98,7 +98,6 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	{
 		if (SensedCharacter == nullptr)
 		{
-			UE_LOG(LogTemp, Log, TEXT("HAIL HDYRA"));
 			CurrentState = EEnemyState::Patrol;
 		}
 		else if (GetComponentByClass<UHealthComponent>()->GetCurrentHealthPercentage() < .4f)
@@ -125,7 +124,6 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	{
 	case EEnemyState::Patrol:
 		TickPatrol();
-		UE_LOG(LogTemp, Log, TEXT("%f Patrolling"), DeltaTime);
 		break;
 	case EEnemyState::Engage:
 		TickEngage();
