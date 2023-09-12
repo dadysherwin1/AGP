@@ -28,6 +28,21 @@ float ANavigationNode::GetDistanceTo(ANavigationNode* OtherNode)
 	return FVector::Distance(GetActorLocation(), OtherNode->GetActorLocation());
 }
 
+void ANavigationNode::ConnectToNode(ANavigationNode* OtherNode)
+{
+	const float Rise = GetActorLocation().Z - OtherNode->GetActorLocation().Z;
+	const float Run = FVector::Dist2D(GetActorLocation(), OtherNode->GetActorLocation());
+	if (Rise/Run < -.9)
+		ConnectedNodes.Add(OtherNode);
+	else if (Rise/Run > .9)
+		OtherNode->ConnectedNodes.Add(this);
+	else
+	{
+		ConnectedNodes.Add(OtherNode);
+		OtherNode->ConnectedNodes.Add(this);
+	}
+}
+
 // Called when the game starts or when spawned
 void ANavigationNode::BeginPlay()
 {

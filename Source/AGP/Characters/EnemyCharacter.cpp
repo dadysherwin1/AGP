@@ -143,6 +143,7 @@ void AEnemyCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComp
 
 void AEnemyCharacter::MoveAlongPath()
 {
+	if (CurrentPath.IsEmpty()) return;
 	if (FVector::Distance(GetActorLocation(), CurrentPath.Last()) <= 150)
 	{
 		CurrentPath.Pop();
