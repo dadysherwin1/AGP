@@ -58,6 +58,16 @@ TArray<FVector> UPathfindingSubsystem::GetPathAway(const FVector& StartLocation,
 	return GetPath(FindNearestNode(StartLocation), FindFurthestNode(RepellingLocation));
 }
 
+TArray<FVector> UPathfindingSubsystem::GetWaypointPositions()
+{
+	TArray<FVector> WaypointPositions;
+	for (TActorIterator<ANavigationNode> It(GetWorld()); It; ++It)
+	{
+		WaypointPositions.Add(It->GetActorLocation());
+	}
+	return WaypointPositions;
+}
+
 void UPathfindingSubsystem::PopulateNodes()
 {
 	Nodes.Empty();

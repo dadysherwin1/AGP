@@ -4,6 +4,7 @@
 #include "BaseCharacter.h"
 
 #include "HealthComponent.h"
+#include "AGP/Pickups/WeaponComponent.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -25,44 +26,15 @@ void ABaseCharacter::BeginPlay()
 
 bool ABaseCharacter::Fire(const FVector& FireAtLocation)
 {
-	if (TimeSinceLastShot < MinTimeBetweenShots)
-	{
-		return false;
-	}
-
-	FHitResult OutHit;
-	const FVector Start = GetActorLocation();
-	FCollisionQueryParams Params;
-	Params.AddIgnoredActor(this);
-	if (GetWorld()->LineTraceSingleByChannel(OutHit, Start,
-		FireAtLocation, ECC_WorldStatic, Params))
-	{
-		if (ABaseCharacter* Character = Cast<ABaseCharacter>(OutHit.GetActor()))
-		{
-			DrawDebugLine(GetWorld(), Start, OutHit.Location, FColor::Green, false, 1, 0, 2);
-			Character->GetComponentByClass<UHealthComponent>()->ApplyDamage(WeaponDamage);
-		}
-		else
-		{
-			DrawDebugLine(GetWorld(), Start, OutHit.Location, FColor::Orange, false, 1, 0, 2);
-		}
-	}
-	else
-	{
-		DrawDebugLine(GetWorld(), Start, FireAtLocation, FColor::Red, false, 1, 0, 2);
-	}
-
-	TimeSinceLastShot = 0.0f;
-	return true;
+	if (HasWeapon())
+		return WeaponComponent->Fire(GetActorLocation(), FireAtLocation);
+	return false;
 }
 
 // Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-	if (HasWeapon())
-		TimeSinceLastShot += DeltaTime;
 }
 
 // Called to bind functionality to input
@@ -74,21 +46,24 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 bool ABaseCharacter::HasWeapon()
 {
-	return bHasWeaponEquipped;
+	if (WeaponComponent)
+		return true;
+	return false;
 }
 
-void ABaseCharacter::EquipWeapon(bool bEquipGun)
+void ABaseCharacter::EquipWeapon(bool bEquipWeapon)
 {
-	bHasWeaponEquipped = bEquipGun;
-	if (bEquipGun)
+	if (bEquipWeapon && !HasWeapon())
 	{
-		UE_LOG(LogTemp, Display, TEXT("Player has equipped weapon"));
+		WeaponComponent = NewObject<UWeaponComponent>(this);
+		WeaponComponent->RegisterComponent();
 	}
-	else
+	else if (!bEquipWeapon && HasWeapon())
 	{
-		UE_LOG(LogTemp, Display, TEXT("Player has unequipped weapon"));
+		WeaponComponent->UnregisterComponent();
+		WeaponComponent = nullptr;
 	}
 	
-	OnWeaponEquip(bEquipGun);
+	OnWeaponEquip(bEquipWeapon);
 }
 

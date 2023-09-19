@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+class UWeaponComponent;
 class UHealthComponent;
 
 UCLASS()
@@ -19,7 +20,7 @@ public:
 
 	UFUNCTION(BlueprintCallable)
 	bool HasWeapon();
-	void EquipWeapon(bool bEquipGun);
+	void EquipWeapon(bool bEquipWeapon);
 
 protected:
 	// Called when the game starts or when spawned
@@ -27,15 +28,15 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnWeaponEquip(bool bEquipGun);
-	bool bHasWeaponEquipped = false;
 
 	// week 5: firing
-	float TimeSinceLastShot = 0.0f;
-	float MinTimeBetweenShots = 0.2f;
-	float WeaponDamage = 10.0f;
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BulletStartPosition;
 	bool Fire(const FVector& FireAtLocation);
+
+	// week 7: pcg 2
+	UPROPERTY()
+	UWeaponComponent* WeaponComponent = nullptr;
 
 public:	
 	// Called every frame

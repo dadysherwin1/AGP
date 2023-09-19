@@ -22,6 +22,8 @@ public:
 	TArray<FVector> GetRandomPath(const FVector& StartLocation);
 	TArray<FVector> GetPath(const FVector& StartLocation, const FVector& TargetLocation);
 	TArray<FVector> GetPathAway(const FVector& StartLocation, const FVector& RepellingLocation);
+
+	TArray<FVector> GetWaypointPositions();
 	
 protected:
 	UPROPERTY()
