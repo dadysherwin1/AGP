@@ -15,13 +15,17 @@ class AGP_API UPickupManagerSubsystem : public UTickableWorldSubsystem
 	GENERATED_BODY()
 
 public:
+	virtual void Tick(float DeltaTime) override;
+	
 	virtual TStatId GetStatId() const override
 	{
-		return GetStatID();
+		return TStatId();
 	}
 
 protected:
 	TArray<FVector> PossibleSpawnLocations;
+	float PickupSpawnRate = 5.0f;
+	float TimeSinceLastSpawn = 0.0f;
 
 private:
 	void PopulateSpawnLocations();

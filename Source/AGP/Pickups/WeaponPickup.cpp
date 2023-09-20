@@ -18,3 +18,21 @@ void AWeaponPickup::OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		this->Destroy();
 	}
 }
+
+EWeaponRarity AWeaponPickup::GenerateRarity()
+{
+	const float RandNum = FMath::RandRange(0.f,1.f);
+	if (RandNum <= .05f)
+		return EWeaponRarity::Legendary;
+	if (RandNum <= .2f)
+		return EWeaponRarity::Master;
+	if (RandNum <= .5f)
+		return EWeaponRarity::Rare;
+	return EWeaponRarity::Common;
+}
+
+void AWeaponPickup::GenerateWeaponPickup()
+{
+	// EWeaponRarity WeaponRarity = GenerateRarity();
+	
+}
