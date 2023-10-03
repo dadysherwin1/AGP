@@ -35,7 +35,7 @@ public:
 	// Sets default values for this component's properties
 	UWeaponComponent();
 
-	bool Fire(const FVector& BulletStart, const FVector& FireAtLocation);
+	void Fire(const FVector& BulletStart, const FVector& FireAtLocation);
 
 protected:
 	// Called when the game starts
@@ -49,5 +49,9 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
-		
+private:
+	bool FireImplementation(const FVector& BulletStart, const FVector& FireAtLocation, FVector& OutHitLocation);
+	void FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation);
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastFire(const FVector& BulletStart, const FVector& HitLocation);
 };

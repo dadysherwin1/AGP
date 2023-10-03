@@ -39,15 +39,11 @@ void APlayerCharacter::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	double Pitch = GetController()->GetControlRotation().Pitch;
-	// FTransform Transform = FTransform(FRotator(Pitch,0,0));
-	// Transform *= FTransform(FVector(0,0,-110));
-
-	FTransform Transform = FTransform(FVector(0,0,-155));
-	Transform *= FTransform(FRotator(Pitch,0,0));
-	Transform *= FTransform(FVector(0,0,60));
-	
-	GetMesh()->SetRelativeTransform(Transform);
+	// double Pitch = GetController()->GetControlRotation().Pitch;
+	// FTransform Transform = FTransform(FVector(0,0,-155));
+	// Transform *= FTransform(FRotator(Pitch,0,0));
+	// Transform *= FTransform(FVector(0,0,60));
+	// GetMesh()->SetRelativeTransform(Transform);
 }
 
 // Called to bind functionality to input

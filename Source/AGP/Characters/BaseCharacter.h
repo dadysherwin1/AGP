@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AGP/Pickups/WeaponComponent.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
@@ -32,7 +33,7 @@ protected:
 	// week 5: firing
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BulletStartPosition;
-	bool Fire(const FVector& FireAtLocation);
+	void Fire(const FVector& FireAtLocation);
 
 	// week 7: pcg 2
 	UPROPERTY()
@@ -45,4 +46,12 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+private:
+	void EquipWeaponImplementation(bool bEquipWeapon,
+	const FWeaponStats& WeaponStats = FWeaponStats());
+	UFUNCTION(NetMulticast, Reliable)
+	
+	void MulticastEquipWeapon(bool bEquipWeapon,
+	const FWeaponStats& WeaponStats = FWeaponStats());
+	
 };

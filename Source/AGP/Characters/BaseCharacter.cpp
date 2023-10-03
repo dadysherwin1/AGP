@@ -24,11 +24,12 @@ void ABaseCharacter::BeginPlay()
 	
 }
 
-bool ABaseCharacter::Fire(const FVector& FireAtLocation)
+void ABaseCharacter::Fire(const FVector& FireAtLocation)
 {
 	if (HasWeapon())
-		return WeaponComponent->Fire(GetActorLocation(), FireAtLocation);
-	return false;
+		// return WeaponComponent->Fire(GetActorLocation(), FireAtLocation);
+		WeaponComponent->Fire(GetActorLocation(), FireAtLocation);
+	//return false;
 }
 
 // Called every frame
@@ -44,14 +45,7 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-bool ABaseCharacter::HasWeapon()
-{
-	if (WeaponComponent)
-		return true;
-	return false;
-}
-
-void ABaseCharacter::EquipWeapon(bool bEquipWeapon)
+void ABaseCharacter::EquipWeaponImplementation(bool bEquipWeapon, const FWeaponStats& WeaponStats)
 {
 	if (bEquipWeapon && !HasWeapon())
 	{
@@ -65,5 +59,26 @@ void ABaseCharacter::EquipWeapon(bool bEquipWeapon)
 	}
 	
 	OnWeaponEquip(bEquipWeapon);
+}
+
+void ABaseCharacter::MulticastEquipWeapon_Implementation(bool bEquipWeapon, const FWeaponStats& WeaponStats)
+{
+	EquipWeaponImplementation(bEquipWeapon, WeaponStats);
+}
+
+bool ABaseCharacter::HasWeapon()
+{
+	if (WeaponComponent)
+		return true;
+	return false;
+}
+
+void ABaseCharacter::EquipWeapon(bool bEquipWeapon)
+{
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		EquipWeaponImplementation(bEquipWeapon);
+		MulticastEquipWeapon(bEquipWeapon);
+	}
 }
 

@@ -16,7 +16,32 @@ UWeaponComponent::UWeaponComponent()
 	// ...
 }
 
-bool UWeaponComponent::Fire(const FVector& BulletStart, const FVector& FireAtLocation)
+void UWeaponComponent::Fire(const FVector& BulletStart, const FVector& FireAtLocation)
+{
+	
+}
+
+
+// Called when the game starts
+void UWeaponComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+	
+}
+
+
+// Called every frame
+void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+{
+	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	TimeSinceLastShot += DeltaTime;
+}
+
+bool UWeaponComponent::FireImplementation(const FVector& BulletStart, const FVector& FireAtLocation,
+	FVector& OutHitLocation)
 {
 	if (TimeSinceLastShot < WeaponStats.FireRate)
 	{
@@ -38,32 +63,25 @@ bool UWeaponComponent::Fire(const FVector& BulletStart, const FVector& FireAtLoc
 		{
 			DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Orange, false, 1, 0, 2);
 		}
+		OutHitLocation = OutHit.Location;
 	}
 	else
 	{
 		DrawDebugLine(GetWorld(), BulletStart, FireAtLocation, FColor::Red, false, 1, 0, 2);
+		OutHitLocation = FireAtLocation;
 	}
 
 	TimeSinceLastShot = 0.0f;
 	return true;
 }
 
-
-// Called when the game starts
-void UWeaponComponent::BeginPlay()
+void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation)
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	DrawDebugLine(GetWorld(), BulletStart, HitLocation, FColor::Blue, false, 1);
 }
 
-
-// Called every frame
-void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UWeaponComponent::MulticastFire_Implementation(const FVector& BulletStart, const FVector& HitLocation)
 {
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	TimeSinceLastShot += DeltaTime;
+	FireVisualImplementation(BulletStart, HitLocation);
 }
 
