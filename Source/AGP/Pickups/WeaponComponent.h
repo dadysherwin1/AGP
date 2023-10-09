@@ -35,8 +35,11 @@ class AGP_API UWeaponComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UWeaponComponent();
+	// Called every frame
+	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	
 	void SetWeaponStats(const FWeaponStats& NewWeaponStats);
-	bool Fire(const FVector& BulletStart, FVector FireAtLocation);
+	void Fire(const FVector& BulletStart, FVector FireAtLocation);
 	void ReloadWeapon();
 
 	bool IsWeaponEmpty() const
@@ -54,9 +57,18 @@ protected:
 	bool bReloading = false;
 	void Reload();
 	
-public:	
-	// Called every frame
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+private:	
+	bool FireImplementation(const FVector& BulletStart, FVector FireAtLocation,
+		FVector& OutHitLocation);
+	void FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation);
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastFire(const FVector& BulletStart, const FVector& HitLocation);
+	UFUNCTION(Server, Reliable)
+	void ServerFire(const FVector& BulletStart, const FVector& FireAtLocation);
 
-		
+	void ReloadImplementation();
+	UFUNCTION(NetMulticast, Unreliable)
+	void MulticastReload();
+	UFUNCTION(Server, Reliable)
+	void ServerReload();
 };

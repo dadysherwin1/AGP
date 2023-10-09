@@ -27,10 +27,12 @@ protected:
 	void OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 	
-	UPROPERTY(BlueprintReadOnly) EWeaponRarity WeaponRarity = EWeaponRarity::Common;
+	UPROPERTY(BlueprintReadOnly, Replicated) EWeaponRarity WeaponRarity = EWeaponRarity::Common;
 	FWeaponStats WeaponStats;
 	UFUNCTION(BlueprintImplementableEvent)
 	void UpdateWeaponPickupMaterial();
+
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
 private:
 	EWeaponRarity GenerateRarity();

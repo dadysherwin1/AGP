@@ -30,4 +30,6 @@ protected:
 private:
 	void PopulateSpawnLocations();
 	void SpawnWeaponPickup();
+
+	void OnWorldBeginPlay(UWorld& InWorld) override;
 };

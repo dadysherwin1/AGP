@@ -12,7 +12,7 @@ UWeaponComponent::UWeaponComponent()
 	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
-
+	SetIsReplicated(true);
 	// ...
 }
 
@@ -22,7 +22,70 @@ void UWeaponComponent::SetWeaponStats(const FWeaponStats& NewWeaponStats)
 	RoundsRemainingInMagazine = WeaponStats.MagazineSize;
 }
 
-bool UWeaponComponent::Fire(const FVector& BulletStart, FVector FireAtLocation)
+void UWeaponComponent::Fire(const FVector& BulletStart, FVector FireAtLocation)
+{
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		FVector HitLocation;
+		if (FireImplementation(BulletStart, FireAtLocation, HitLocation))
+			MulticastFire(BulletStart, HitLocation);
+	}
+	else if (GetOwnerRole() == ROLE_AutonomousProxy)
+		ServerFire(BulletStart, FireAtLocation);
+}
+
+
+// Called when the game starts
+void UWeaponComponent::BeginPlay()
+{
+	Super::BeginPlay();
+
+	// ...
+	
+}
+
+void UWeaponComponent::ReloadWeapon()
+{
+	if (GetOwnerRole() == ROLE_Authority)
+	{
+		ReloadImplementation();
+		MulticastReload();
+	}
+	else if (GetOwnerRole() == ROLE_AutonomousProxy)
+	{
+		ServerReload();
+	}
+}
+
+void UWeaponComponent::Reload()
+{
+	bReloading = false;
+	RoundsRemainingInMagazine = WeaponStats.MagazineSize;
+}
+
+void UWeaponComponent::ReloadImplementation()
+{
+	if (RoundsRemainingInMagazine >= WeaponStats.MagazineSize) return;
+	if (bReloading) return;
+
+	bReloading = true;
+	FTimerHandle Temp;
+	GetOwner()->GetWorldTimerManager().SetTimer(Temp, this, &UWeaponComponent::Reload, WeaponStats.ReloadTime);
+}
+
+void UWeaponComponent::MulticastReload_Implementation()
+{
+	ReloadImplementation();
+}
+
+void UWeaponComponent::ServerReload_Implementation()
+{
+	ReloadImplementation();
+	MulticastReload();
+}
+
+bool UWeaponComponent::FireImplementation(const FVector& BulletStart, FVector FireAtLocation,
+	FVector& OutHitLocation)
 {
 	// checks
 	if (TimeSinceLastShot < WeaponStats.FireRate)
@@ -54,42 +117,34 @@ bool UWeaponComponent::Fire(const FVector& BulletStart, FVector FireAtLocation)
 			DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Orange, false,
 				1, 0, 2);
 		}
+		OutHitLocation = OutHit.Location;
 	}
 	else
 	{
 		DrawDebugLine(GetWorld(), BulletStart, FireAtLocation, FColor::Red, false,
 			1, 0, 2);
+		OutHitLocation = FireAtLocation;
 	}
 
 	TimeSinceLastShot = 0.0f;
 	return true;
 }
 
-void UWeaponComponent::ReloadWeapon()
+void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation)
 {
-	if (RoundsRemainingInMagazine >= WeaponStats.MagazineSize) return;
-	if (bReloading) return;
-
-	bReloading = true;
-	FTimerHandle Temp;
-	GetOwner()->GetWorldTimerManager().SetTimer(Temp, this, &UWeaponComponent::Reload, WeaponStats.ReloadTime);
+	DrawDebugLine(GetWorld(), BulletStart, HitLocation, FColor::Blue, false, 1);
 }
 
-
-// Called when the game starts
-void UWeaponComponent::BeginPlay()
+void UWeaponComponent::ServerFire_Implementation(const FVector& BulletStart, const FVector& FireAtLocation)
 {
-	Super::BeginPlay();
-
-	// ...
-	
+	FVector HitLocation;
+	if (FireImplementation(BulletStart, FireAtLocation, HitLocation))
+		MulticastFire(BulletStart, HitLocation);
 }
 
-
-void UWeaponComponent::Reload()
+void UWeaponComponent::MulticastFire_Implementation(const FVector& BulletStart, const FVector& HitLocation)
 {
-	bReloading = false;
-	RoundsRemainingInMagazine = WeaponStats.MagazineSize;
+	FireVisualImplementation(BulletStart, HitLocation);
 }
 
 // Called every frame

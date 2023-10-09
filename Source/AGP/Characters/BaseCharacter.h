@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AGP/Pickups/WeaponComponent.h"
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
@@ -23,6 +24,13 @@ public:
 	bool HasWeapon() const;
 	void EquipWeapon(bool bEquipWeapon, const FWeaponStats& WeaponStats);
 
+	// Called every frame
+	virtual void Tick(float DeltaTime) override;
+
+	// Called to bind functionality to input
+	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
+
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -33,18 +41,19 @@ protected:
 	// week 5: firing
 	UPROPERTY(VisibleAnywhere)
 	USceneComponent* BulletStartPosition;
-	bool Fire(const FVector& FireAtLocation);
+	void Fire(const FVector& FireAtLocation);
 
 	// week 7: pcg 2
-	UPROPERTY()
+	UPROPERTY(Replicated)
 	UWeaponComponent* WeaponComponent = nullptr;
 	void Reload();
 
-public:	
-	// Called every frame
-	virtual void Tick(float DeltaTime) override;
+	// week 8 multiplayer
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 
-	// Called to bind functionality to input
-	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
-
+private:	
+	void EquipWeaponImplementation(bool bEquipWeapon,
+		const FWeaponStats& WeaponStats = FWeaponStats());
+	UFUNCTION(NetMulticast, Reliable)
+	void MulticastEquipWeapon(bool bEquipWeapon);
 };

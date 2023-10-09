@@ -31,6 +31,9 @@ void UPickupManagerSubsystem::PopulateSpawnLocations()
 
 void UPickupManagerSubsystem::SpawnWeaponPickup()
 {
+	if (GetWorld()->GetNetMode() == NM_Client)
+		return;
+	
 	// check if theres nodes to spawn on
 	if (PossibleSpawnLocations.IsEmpty())
 	{
@@ -50,7 +53,16 @@ void UPickupManagerSubsystem::SpawnWeaponPickup()
 	SpawnPosition.Z += 50.0f;
 
 	// spawn weapon blueprint
-	AWeaponPickup* Pickup =GetWorld()->SpawnActor<AWeaponPickup>(
+	AWeaponPickup* Pickup = GetWorld()->SpawnActor<AWeaponPickup>(
 		GameInstance->GetWeaponPickupClass(), SpawnPosition, FRotator::ZeroRotator);
 	UE_LOG(LogTemp, Display, TEXT("Weapon Pickup Spawned"));
+}
+
+void UPickupManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
+{
+	Super::OnWorldBeginPlay(InWorld);
+
+	// crashes...
+	// if (GetWorld()->GetNetMode() == NM_Client)
+	// 	this->Deinitialize();
 }

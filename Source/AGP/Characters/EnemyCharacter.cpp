@@ -42,7 +42,8 @@ void AEnemyCharacter::TickEngage()
 		CurrentPath = PathfindingSubsystem->GetPath(GetActorLocation(),
 			SensedCharacter->GetActorLocation());
 	MoveAlongPath();
-	if (Fire(SensedCharacter->GetActorLocation()) && WeaponComponent->IsWeaponEmpty())
+	Fire(SensedCharacter->GetActorLocation());
+	if (WeaponComponent->IsWeaponEmpty())
 		Reload();
 }
 

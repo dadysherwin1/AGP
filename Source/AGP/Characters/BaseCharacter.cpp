@@ -5,6 +5,7 @@
 
 #include "HealthComponent.h"
 #include "AGP/Pickups/WeaponComponent.h"
+#include "Net/UnrealNetwork.h"
 
 // Sets default values
 ABaseCharacter::ABaseCharacter()
@@ -24,17 +25,52 @@ void ABaseCharacter::BeginPlay()
 	
 }
 
-bool ABaseCharacter::Fire(const FVector& FireAtLocation)
+void ABaseCharacter::Fire(const FVector& FireAtLocation)
 {
 	if (HasWeapon())
-		return WeaponComponent->Fire(GetActorLocation(), FireAtLocation);
-	return false;
+		WeaponComponent->Fire(GetActorLocation(), FireAtLocation);
 }
 
 void ABaseCharacter::Reload()
 {
 	if (!HasWeapon()) return;
 	WeaponComponent->ReloadWeapon();
+}
+
+void ABaseCharacter::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(ABaseCharacter, WeaponComponent);
+}
+
+void ABaseCharacter::EquipWeaponImplementation(bool bEquipWeapon, const FWeaponStats& WeaponStats)
+{
+	if (bEquipWeapon && !HasWeapon()) // equip gun
+		{
+		WeaponComponent = NewObject<UWeaponComponent>(this);
+		WeaponComponent->SetWeaponStats(WeaponStats);
+		WeaponComponent->RegisterComponent();
+		}
+	else if (!bEquipWeapon && HasWeapon()) // unequip gun
+		{
+		WeaponComponent->UnregisterComponent();
+		WeaponComponent = nullptr;
+		}
+	else if (bEquipWeapon && HasWeapon()) // unequip and equip gun
+		{
+		WeaponComponent->UnregisterComponent();
+		WeaponComponent = NewObject<UWeaponComponent>(this);
+		WeaponComponent->SetWeaponStats(WeaponStats);
+		WeaponComponent->RegisterComponent();
+		}
+	
+	OnWeaponEquip(bEquipWeapon);
+}
+
+void ABaseCharacter::MulticastEquipWeapon_Implementation(bool bEquipWeapon)
+{
+	// EquipWeaponImplementation(bEquipWeapon, WeaponStats);
+	OnWeaponEquip(bEquipWeapon);
 }
 
 // Called every frame
@@ -59,25 +95,10 @@ bool ABaseCharacter::HasWeapon() const
 
 void ABaseCharacter::EquipWeapon(bool bEquipWeapon, const FWeaponStats& WeaponStats)
 {
-	if (bEquipWeapon && !HasWeapon()) // equip gun
+	if (GetLocalRole() == ROLE_Authority)
 	{
-		WeaponComponent = NewObject<UWeaponComponent>(this);
-		WeaponComponent->SetWeaponStats(WeaponStats);
-		WeaponComponent->RegisterComponent();
+		EquipWeaponImplementation(bEquipWeapon, WeaponStats);
+		MulticastEquipWeapon(bEquipWeapon);
 	}
-	else if (!bEquipWeapon && HasWeapon()) // unequip gun
-	{
-		WeaponComponent->UnregisterComponent();
-		WeaponComponent = nullptr;
-	}
-	else if (bEquipWeapon && HasWeapon()) // unequip and equip gun
-	{
-		WeaponComponent->UnregisterComponent();
-		WeaponComponent = NewObject<UWeaponComponent>(this);
-		WeaponComponent->SetWeaponStats(WeaponStats);
-		WeaponComponent->RegisterComponent();
-	}
-	
-	OnWeaponEquip(bEquipWeapon);
 }
 

@@ -23,13 +23,15 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* PickupCollider;
-	UPROPERTY(BlueprintReadWrite)
+	UPROPERTY(BlueprintReadWrite, Replicated)
 	UStaticMeshComponent* PickupMesh;
 
 	UFUNCTION()
 	virtual void OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 		UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult & SweepResult);
 
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

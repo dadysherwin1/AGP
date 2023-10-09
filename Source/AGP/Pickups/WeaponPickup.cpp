@@ -4,18 +4,23 @@
 #include "WeaponPickup.h"
 
 #include "AGP/Characters/PlayerCharacter.h"
+#include "Net/UnrealNetwork.h"
 
 void AWeaponPickup::BeginPlay()
 {
 	Super::BeginPlay();
 
-	GenerateWeaponPickup();
+	if (GetLocalRole() == ROLE_Authority)
+	{
+		GenerateWeaponPickup();
+	}
 	UpdateWeaponPickupMaterial();
 }
 
 void AWeaponPickup::OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (GetLocalRole() != ROLE_Authority) return;
 	UE_LOG(LogTemp, Display, TEXT("Overlap event occured in WeaponPickup"));
 	ABaseCharacter* Player = Cast<ABaseCharacter>(OtherActor);
 	if (Player)
@@ -25,6 +30,12 @@ void AWeaponPickup::OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		Player->EquipWeapon(true, WeaponStats);
 		this->Destroy();
 	}
+}
+
+void AWeaponPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AWeaponPickup, WeaponRarity);
 }
 
 EWeaponRarity AWeaponPickup::GenerateRarity()
