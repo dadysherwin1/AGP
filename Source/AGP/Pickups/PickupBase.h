@@ -23,7 +23,7 @@ protected:
 
 	UPROPERTY(VisibleAnywhere)
 	UBoxComponent* PickupCollider;
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(BlueprintReadWrite)
 	UStaticMeshComponent* PickupMesh;
 
 	UFUNCTION()

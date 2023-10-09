@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "BaseCharacter.h"
+#include "InputActionValue.h"
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
@@ -24,16 +25,12 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-	UPROPERTY(EditDefaultsOnly)
-	UInputAction* MoveAction;
-	UPROPERTY(EditDefaultsOnly)
-	UInputAction* LookAction;
-	UPROPERTY(EditDefaultsOnly)
-	float LookSensitivity;
-	UPROPERTY(EditDefaultsOnly)
-	UInputAction* JumpAction;
-	UPROPERTY(EditDefaultsOnly)
-	UInputAction* FireAction;
+	UPROPERTY(EditDefaultsOnly) UInputAction* MoveAction;
+	UPROPERTY(EditDefaultsOnly) UInputAction* LookAction;
+	UPROPERTY(EditDefaultsOnly) float LookSensitivity;
+	UPROPERTY(EditDefaultsOnly) UInputAction* JumpAction;
+	UPROPERTY(EditDefaultsOnly) UInputAction* FireAction;
+	UPROPERTY(EditDefaultsOnly) UInputAction* ReloadAction;
 	
 	UPROPERTY(EditDefaultsOnly)
 	UInputMappingContext* InputMappingContext;

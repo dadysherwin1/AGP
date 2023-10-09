@@ -6,6 +6,7 @@
 #include "GameFramework/Character.h"
 #include "BaseCharacter.generated.h"
 
+struct FWeaponStats;
 class UWeaponComponent;
 class UHealthComponent;
 
@@ -19,8 +20,8 @@ public:
 	ABaseCharacter();
 
 	UFUNCTION(BlueprintCallable)
-	bool HasWeapon();
-	void EquipWeapon(bool bEquipWeapon);
+	bool HasWeapon() const;
+	void EquipWeapon(bool bEquipWeapon, const FWeaponStats& WeaponStats);
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,6 +38,7 @@ protected:
 	// week 7: pcg 2
 	UPROPERTY()
 	UWeaponComponent* WeaponComponent = nullptr;
+	void Reload();
 
 public:	
 	// Called every frame

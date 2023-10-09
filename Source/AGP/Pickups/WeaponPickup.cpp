@@ -5,6 +5,14 @@
 
 #include "AGP/Characters/PlayerCharacter.h"
 
+void AWeaponPickup::BeginPlay()
+{
+	Super::BeginPlay();
+
+	GenerateWeaponPickup();
+	UpdateWeaponPickupMaterial();
+}
+
 void AWeaponPickup::OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -12,9 +20,9 @@ void AWeaponPickup::OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AA
 	ABaseCharacter* Player = Cast<ABaseCharacter>(OtherActor);
 	if (Player)
 	{
-		if (Player->HasWeapon()) return;
+		// if (Player->HasWeapon()) return;
 		
-		Player->EquipWeapon(true);
+		Player->EquipWeapon(true, WeaponStats);
 		this->Destroy();
 	}
 }
@@ -33,6 +41,69 @@ EWeaponRarity AWeaponPickup::GenerateRarity()
 
 void AWeaponPickup::GenerateWeaponPickup()
 {
-	// EWeaponRarity WeaponRarity = GenerateRarity();
-	
+	// set rarity
+	WeaponRarity = GenerateRarity();
+
+	// pick good stats
+	TArray<bool> GoodStats = {false, false, false, false, false};
+	switch (WeaponRarity)
+	{
+	case EWeaponRarity::Legendary:
+		PickRandomStat(GoodStats);
+	case EWeaponRarity::Master:
+		PickRandomStat(GoodStats);
+	case EWeaponRarity::Rare:
+		PickRandomStat(GoodStats);
+	case EWeaponRarity::Common:
+		PickRandomStat(GoodStats);
+	}
+
+	// set stats
+	WeaponStats.Accuracy = GenerateAccuracy(GoodStats[0]);
+	WeaponStats.BaseDamage = GenerateBaseDamage(GoodStats[1]);
+	WeaponStats.FireRate = GenerateFireRate(GoodStats[2]);
+	WeaponStats.MagazineSize = GenerateMagazineSize(GoodStats[3]);
+}
+
+float AWeaponPickup::GenerateAccuracy(const bool& bIsGood)
+{
+	if (bIsGood)
+		return FMath::RandRange(GoodAccuracy.X, GoodAccuracy.Y);
+	return FMath::RandRange(BadAccuracy.X, BadAccuracy.Y);
+}
+
+float AWeaponPickup::GenerateFireRate(const bool& bIsGood)
+{
+	if (bIsGood)
+		return FMath::RandRange(GoodFireRate.X, GoodFireRate.Y);
+	return FMath::RandRange(BadFireRate.X, BadFireRate.Y);
+}
+
+float AWeaponPickup::GenerateBaseDamage(const bool& bIsGood)
+{
+	if (bIsGood)
+		return FMath::RandRange(GoodBaseDamage.X, GoodBaseDamage.Y);
+	return FMath::RandRange(BadBaseDamage.X, BadBaseDamage.Y);
+}
+
+uint32 AWeaponPickup::GenerateMagazineSize(const bool& bIsGood)
+{
+	if (bIsGood)
+		return FMath::RandRange(GoodMagazineSize.X, GoodMagazineSize.Y);
+	return FMath::RandRange(BadMagazineSize.X, BadMagazineSize.Y-1);
+}
+
+float AWeaponPickup::GenerateReloadTime(const bool& bIsGood)
+{
+	if (bIsGood)
+		return FMath::RandRange(GoodReloadTime.X, GoodReloadTime.Y);
+	return FMath::RandRange(BadReloadTime.X, BadReloadTime.Y);
+}
+
+void AWeaponPickup::PickRandomStat(TArray<bool>& GoodStats)
+{
+	int Index = FMath::RandRange(0,4);
+	while (GoodStats[Index])
+		Index = FMath::RandRange(0,4);
+	GoodStats[Index] = true;
 }

@@ -6,6 +6,7 @@
 #include "HealthComponent.h"
 #include "PlayerCharacter.h"
 #include "AGP/Pathfinding/PathfindingSubsystem.h"
+#include "AGP/Pickups/WeaponComponent.h"
 #include "Perception/PawnSensingComponent.h"
 
 // Sets default values
@@ -41,7 +42,8 @@ void AEnemyCharacter::TickEngage()
 		CurrentPath = PathfindingSubsystem->GetPath(GetActorLocation(),
 			SensedCharacter->GetActorLocation());
 	MoveAlongPath();
-	Fire(SensedCharacter->GetActorLocation());
+	if (Fire(SensedCharacter->GetActorLocation()) && WeaponComponent->IsWeaponEmpty())
+		Reload();
 }
 
 void AEnemyCharacter::TickEvade()

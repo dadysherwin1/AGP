@@ -16,13 +16,27 @@ UWeaponComponent::UWeaponComponent()
 	// ...
 }
 
-bool UWeaponComponent::Fire(const FVector& BulletStart, const FVector& FireAtLocation)
+void UWeaponComponent::SetWeaponStats(const FWeaponStats& NewWeaponStats)
 {
-	if (TimeSinceLastShot < WeaponStats.FireRate)
-	{
-		return false;
-	}
+	WeaponStats = NewWeaponStats;
+	RoundsRemainingInMagazine = WeaponStats.MagazineSize;
+}
 
+bool UWeaponComponent::Fire(const FVector& BulletStart, FVector FireAtLocation)
+{
+	// checks
+	if (TimeSinceLastShot < WeaponStats.FireRate)
+		return false;
+	if (RoundsRemainingInMagazine <= 0)
+		return false;
+	RoundsRemainingInMagazine -= 1;
+	
+	// add spread
+	FVector Direction = FireAtLocation - BulletStart;
+	Direction = Direction.RotateAngleAxis(180.0f*(1.0f-WeaponStats.Accuracy), FMath::VRand());
+	FireAtLocation = BulletStart + Direction * FireAtLocation.Length();
+
+	// fire raycast
 	FHitResult OutHit;
 	FCollisionQueryParams Params;
 	Params.AddIgnoredActor(GetOwner());
@@ -31,21 +45,34 @@ bool UWeaponComponent::Fire(const FVector& BulletStart, const FVector& FireAtLoc
 	{
 		if (ABaseCharacter* Character = Cast<ABaseCharacter>(OutHit.GetActor()))
 		{
-			DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Green, false, 1, 0, 2);
+			DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Green, false,
+				1, 0, 2);
 			Character->GetComponentByClass<UHealthComponent>()->ApplyDamage(WeaponStats.BaseDamage);
 		}
 		else
 		{
-			DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Orange, false, 1, 0, 2);
+			DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Orange, false,
+				1, 0, 2);
 		}
 	}
 	else
 	{
-		DrawDebugLine(GetWorld(), BulletStart, FireAtLocation, FColor::Red, false, 1, 0, 2);
+		DrawDebugLine(GetWorld(), BulletStart, FireAtLocation, FColor::Red, false,
+			1, 0, 2);
 	}
 
 	TimeSinceLastShot = 0.0f;
 	return true;
+}
+
+void UWeaponComponent::ReloadWeapon()
+{
+	if (RoundsRemainingInMagazine >= WeaponStats.MagazineSize) return;
+	if (bReloading) return;
+
+	bReloading = true;
+	FTimerHandle Temp;
+	GetOwner()->GetWorldTimerManager().SetTimer(Temp, this, &UWeaponComponent::Reload, WeaponStats.ReloadTime);
 }
 
 
@@ -59,8 +86,15 @@ void UWeaponComponent::BeginPlay()
 }
 
 
+void UWeaponComponent::Reload()
+{
+	bReloading = false;
+	RoundsRemainingInMagazine = WeaponStats.MagazineSize;
+}
+
 // Called every frame
-void UWeaponComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
+void UWeaponComponent::TickComponent
+	(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 

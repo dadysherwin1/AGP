@@ -24,6 +24,7 @@ public:
 	float FireRate = 0.2f;
 	float BaseDamage = 10.0f;
 	uint32 MagazineSize = 5;
+	float ReloadTime = 1.0f;
 };
 
 UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
@@ -34,8 +35,14 @@ class AGP_API UWeaponComponent : public UActorComponent
 public:	
 	// Sets default values for this component's properties
 	UWeaponComponent();
+	void SetWeaponStats(const FWeaponStats& NewWeaponStats);
+	bool Fire(const FVector& BulletStart, FVector FireAtLocation);
+	void ReloadWeapon();
 
-	bool Fire(const FVector& BulletStart, const FVector& FireAtLocation);
+	bool IsWeaponEmpty() const
+	{
+		return RoundsRemainingInMagazine <= 0;
+	}
 
 protected:
 	// Called when the game starts
@@ -44,7 +51,9 @@ protected:
 	FWeaponStats WeaponStats;
 	uint32 RoundsRemainingInMagazine;
 	float TimeSinceLastShot = 0.0f;
-
+	bool bReloading = false;
+	void Reload();
+	
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;

@@ -31,6 +31,12 @@ bool ABaseCharacter::Fire(const FVector& FireAtLocation)
 	return false;
 }
 
+void ABaseCharacter::Reload()
+{
+	if (!HasWeapon()) return;
+	WeaponComponent->ReloadWeapon();
+}
+
 // Called every frame
 void ABaseCharacter::Tick(float DeltaTime)
 {
@@ -44,24 +50,32 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 
 }
 
-bool ABaseCharacter::HasWeapon()
+bool ABaseCharacter::HasWeapon() const
 {
 	if (WeaponComponent)
 		return true;
 	return false;
 }
 
-void ABaseCharacter::EquipWeapon(bool bEquipWeapon)
+void ABaseCharacter::EquipWeapon(bool bEquipWeapon, const FWeaponStats& WeaponStats)
 {
-	if (bEquipWeapon && !HasWeapon())
+	if (bEquipWeapon && !HasWeapon()) // equip gun
 	{
 		WeaponComponent = NewObject<UWeaponComponent>(this);
+		WeaponComponent->SetWeaponStats(WeaponStats);
 		WeaponComponent->RegisterComponent();
 	}
-	else if (!bEquipWeapon && HasWeapon())
+	else if (!bEquipWeapon && HasWeapon()) // unequip gun
 	{
 		WeaponComponent->UnregisterComponent();
 		WeaponComponent = nullptr;
+	}
+	else if (bEquipWeapon && HasWeapon()) // unequip and equip gun
+	{
+		WeaponComponent->UnregisterComponent();
+		WeaponComponent = NewObject<UWeaponComponent>(this);
+		WeaponComponent->SetWeaponStats(WeaponStats);
+		WeaponComponent->RegisterComponent();
 	}
 	
 	OnWeaponEquip(bEquipWeapon);
