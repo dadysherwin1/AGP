@@ -2,9 +2,8 @@
 
 
 #include "HealthComponent.h"
-
-#include "PlayerCharacter.h"
 #include "Net/UnrealNetwork.h"
+#include "PlayerCharacter.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()

@@ -81,6 +81,18 @@ void APlayerCharacter::UpdateHealthBar(float HealthPercent)
 		PlayerHUD->SetHealthBar(HealthPercent);
 }
 
+void APlayerCharacter::UpdateAmmoText(int Ammo)
+{
+	if (IsLocallyControlled() && PlayerHUD)
+		PlayerHUD->SetAmmoText(Ammo);
+}
+
+void APlayerCharacter::UpdateMagazineSizeText(int MagazineSize)
+{
+	if (IsLocallyControlled() && PlayerHUD)
+		PlayerHUD->SetMagazineSizeText(MagazineSize);
+}
+
 void APlayerCharacter::Move(const FInputActionValue& Value)
 {
 	// get input movement direction, in object space

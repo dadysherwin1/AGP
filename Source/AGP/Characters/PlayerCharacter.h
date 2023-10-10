@@ -51,6 +51,8 @@ public:
 
 	// week 9: multiplayer part 2
 	void UpdateHealthBar(float HealthPercent);
+	void UpdateAmmoText(int Ammo);
+	void UpdateMagazineSizeText(int MagazineSize);
 
 	
 private:

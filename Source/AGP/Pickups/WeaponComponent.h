@@ -23,6 +23,7 @@ public:
 	float Accuracy = 1.0f;
 	float FireRate = 0.2f;
 	float BaseDamage = 10.0f;
+	UPROPERTY()
 	uint32 MagazineSize = 5;
 	float ReloadTime = 1.0f;
 };
@@ -37,6 +38,7 @@ public:
 	UWeaponComponent();
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
 	
 	void SetWeaponStats(const FWeaponStats& NewWeaponStats);
 	void Fire(const FVector& BulletStart, FVector FireAtLocation);
@@ -47,15 +49,20 @@ public:
 		return RoundsRemainingInMagazine <= 0;
 	}
 
+	
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
 
+	UPROPERTY(ReplicatedUsing = OnWeaponStatsChanged)
 	FWeaponStats WeaponStats;
+	UPROPERTY(ReplicatedUsing = OnAmmoChanged);
 	uint32 RoundsRemainingInMagazine;
 	float TimeSinceLastShot = 0.0f;
 	bool bReloading = false;
 	void Reload();
+	
 	
 private:	
 	bool FireImplementation(const FVector& BulletStart, FVector FireAtLocation,
@@ -71,4 +78,10 @@ private:
 	void MulticastReload();
 	UFUNCTION(Server, Reliable)
 	void ServerReload();
+
+	// week 9: multiplayer part 2
+	UFUNCTION()
+	void OnAmmoChanged();
+	UFUNCTION()
+	void OnWeaponStatsChanged();
 };

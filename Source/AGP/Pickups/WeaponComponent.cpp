@@ -2,9 +2,10 @@
 
 
 #include "WeaponComponent.h"
-
+#include "Net/UnrealNetwork.h"
 #include "AGP/Characters/BaseCharacter.h"
 #include "AGP/Characters/HealthComponent.h"
+#include "AGP/Characters/PlayerCharacter.h"
 
 // Sets default values for this component's properties
 UWeaponComponent::UWeaponComponent()
@@ -20,6 +21,8 @@ void UWeaponComponent::SetWeaponStats(const FWeaponStats& NewWeaponStats)
 {
 	WeaponStats = NewWeaponStats;
 	RoundsRemainingInMagazine = WeaponStats.MagazineSize;
+	OnWeaponStatsChanged();
+	OnAmmoChanged();
 }
 
 void UWeaponComponent::Fire(const FVector& BulletStart, FVector FireAtLocation)
@@ -28,7 +31,10 @@ void UWeaponComponent::Fire(const FVector& BulletStart, FVector FireAtLocation)
 	{
 		FVector HitLocation;
 		if (FireImplementation(BulletStart, FireAtLocation, HitLocation))
+		{
+			OnAmmoChanged();
 			MulticastFire(BulletStart, HitLocation);
+		}
 	}
 	else if (GetOwnerRole() == ROLE_AutonomousProxy)
 		ServerFire(BulletStart, FireAtLocation);
@@ -61,6 +67,7 @@ void UWeaponComponent::Reload()
 {
 	bReloading = false;
 	RoundsRemainingInMagazine = WeaponStats.MagazineSize;
+	OnAmmoChanged();
 }
 
 void UWeaponComponent::ReloadImplementation()
@@ -71,6 +78,22 @@ void UWeaponComponent::ReloadImplementation()
 	bReloading = true;
 	FTimerHandle Temp;
 	GetOwner()->GetWorldTimerManager().SetTimer(Temp, this, &UWeaponComponent::Reload, WeaponStats.ReloadTime);
+}
+
+void UWeaponComponent::OnAmmoChanged()
+{
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner()))
+	{
+		PlayerCharacter->UpdateAmmoText(RoundsRemainingInMagazine);
+	}
+}
+
+void UWeaponComponent::OnWeaponStatsChanged()
+{
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner()))
+	{
+		PlayerCharacter->UpdateMagazineSizeText(WeaponStats.MagazineSize);
+	}
 }
 
 void UWeaponComponent::MulticastReload_Implementation()
@@ -154,5 +177,12 @@ void UWeaponComponent::TickComponent
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
 	TimeSinceLastShot += DeltaTime;
+}
+
+void UWeaponComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UWeaponComponent, WeaponStats);
+	DOREPLIFETIME(UWeaponComponent, RoundsRemainingInMagazine);
 }
 

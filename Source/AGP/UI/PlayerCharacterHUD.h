@@ -6,6 +6,7 @@
 #include "Blueprint/UserWidget.h"
 #include "PlayerCharacterHUD.generated.h"
 
+class UTextBlock;
 class UProgressBar;
 /**
  * 
@@ -18,7 +19,13 @@ class AGP_API UPlayerCharacterHUD : public UUserWidget
 protected:
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	UProgressBar* HealthBar;
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UTextBlock* AmmoText;
+	UPROPERTY(EditAnywhere, meta=(BindWidget))
+	UTextBlock* MagazineSizeText;
 
 public:
 	void SetHealthBar(float HealthPercent);
+	void SetAmmoText(int Ammo);
+	void SetMagazineSizeText(int Ammo);
 };
