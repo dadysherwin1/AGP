@@ -8,6 +8,7 @@
 #include "GameFramework/Character.h"
 #include "PlayerCharacter.generated.h"
 
+class UPlayerCharacterHUD;
 struct FInputActionValue;
 class UInputAction;
 class UInputMappingContext;
@@ -35,6 +36,12 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	UInputMappingContext* InputMappingContext;
 
+	// week 9: multiplayer part 2
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<UPlayerCharacterHUD> PlayerHUDClass;
+	UPROPERTY()
+	UPlayerCharacterHUD* PlayerHUD;
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
@@ -42,6 +49,10 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
+	// week 9: multiplayer part 2
+	void UpdateHealthBar(float HealthPercent);
+
+	
 private:
 	void Move(const FInputActionValue& Value);
 	void Look(const FInputActionValue& Value);

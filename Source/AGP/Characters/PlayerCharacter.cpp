@@ -6,6 +6,8 @@
 #include "EnhancedInputSubsystems.h"
 #include "EnhancedInputComponent.h"
 #include "CoreFwd.h"
+#include "AGP/UI/PlayerCharacterHUD.h"
+#include "Blueprint/UserWidget.h"
 #include "Kismet/KismetMathLibrary.h"
 
 // Sets default values
@@ -21,6 +23,7 @@ void APlayerCharacter::BeginPlay()
 {
 	Super::BeginPlay();
 
+	// Input system
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
 	{
@@ -32,6 +35,17 @@ void APlayerCharacter::BeginPlay()
 			Subsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
+
+	// HUD
+	if (IsLocallyControlled() && PlayerHUDClass)
+	{
+		PlayerHUD = CreateWidget<UPlayerCharacterHUD>(PlayerController, PlayerHUDClass);
+		if (PlayerHUD)
+		{
+			PlayerHUD->AddToPlayerScreen();
+		}
+	}
+	UpdateHealthBar(1.0f);
 }
 
 // Called every frame
@@ -59,6 +73,12 @@ void APlayerCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCom
 		Input->BindAction(FireAction, ETriggerEvent::Triggered, this, &APlayerCharacter::FireWeapon);
 		Input->BindAction(ReloadAction, ETriggerEvent::Triggered, this, &APlayerCharacter::Reload);
 	}
+}
+
+void APlayerCharacter::UpdateHealthBar(float HealthPercent)
+{
+	if (IsLocallyControlled() && PlayerHUD)
+		PlayerHUD->SetHealthBar(HealthPercent);
 }
 
 void APlayerCharacter::Move(const FInputActionValue& Value)

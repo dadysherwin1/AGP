@@ -25,12 +25,18 @@ public:
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;
-
+	virtual void GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const override;
+	
 	float MaxHealth = 100.0f;
+	UPROPERTY(ReplicatedUsing = UpdateHealthBar)
 	float CurrentHealth;
 	bool bIsDead = false;
 
 	void OnDeath();
+
+	// week 9: multiplayer part 2
+	UFUNCTION()
+	void UpdateHealthBar();
 
 public:	
 	// Called every frame

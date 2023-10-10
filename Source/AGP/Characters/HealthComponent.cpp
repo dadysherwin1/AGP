@@ -3,6 +3,9 @@
 
 #include "HealthComponent.h"
 
+#include "PlayerCharacter.h"
+#include "Net/UnrealNetwork.h"
+
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
@@ -10,6 +13,7 @@ UHealthComponent::UHealthComponent()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	CurrentHealth = MaxHealth;
+	SetIsReplicatedByDefault(true);
 	// ...
 }
 
@@ -39,6 +43,7 @@ void UHealthComponent::ApplyDamage(float DamageAmount)
 		OnDeath();
 		CurrentHealth = 0.0f;
 	}
+	UpdateHealthBar();
 }
 
 void UHealthComponent::ApplyHealing(float HealingAmount)
@@ -47,6 +52,7 @@ void UHealthComponent::ApplyHealing(float HealingAmount)
 		return;
 
 	CurrentHealth += FMath::Min(HealingAmount, MaxHealth - CurrentHealth); // dont overheal
+	UpdateHealthBar();
 }
 
 
@@ -59,11 +65,23 @@ void UHealthComponent::BeginPlay()
 	
 }
 
+void UHealthComponent::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(UHealthComponent, CurrentHealth);
+}
+
 
 void UHealthComponent::OnDeath()
 {
 	bIsDead = true;
 	UE_LOG(LogTemp, Log, TEXT("The character has died"));
+}
+
+void UHealthComponent::UpdateHealthBar()
+{
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner()))
+		PlayerCharacter->UpdateHealthBar(GetCurrentHealthPercentage());
 }
 
 // Called every frame
