@@ -58,7 +58,7 @@ protected:
 	UPROPERTY(ReplicatedUsing = OnWeaponStatsChanged)
 	FWeaponStats WeaponStats;
 	UPROPERTY(ReplicatedUsing = OnAmmoChanged);
-	uint32 RoundsRemainingInMagazine;
+	uint32 RoundsRemainingInMagazine = 0;
 	float TimeSinceLastShot = 0.0f;
 	bool bReloading = false;
 	void Reload();

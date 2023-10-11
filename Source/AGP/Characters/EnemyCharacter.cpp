@@ -43,6 +43,7 @@ void AEnemyCharacter::TickEngage()
 			SensedCharacter->GetActorLocation());
 	MoveAlongPath();
 	Fire(SensedCharacter->GetActorLocation());
+	UE_LOG(LogTemp, Log, TEXT("what the hell"));
 	if (WeaponComponent->IsWeaponEmpty())
 		Reload();
 }
@@ -80,6 +81,9 @@ void AEnemyCharacter::UpdateSight()
 // Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
 {
+	UE_LOG(LogTemp, Log, TEXT("%i"), GetLocalRole());
+	if (GetLocalRole() < 3) return;
+	
 	Super::Tick(DeltaTime);
 	UpdateSight();
 	
