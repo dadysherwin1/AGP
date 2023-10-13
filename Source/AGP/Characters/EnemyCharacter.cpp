@@ -14,7 +14,6 @@ AEnemyCharacter::AEnemyCharacter()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
 	PawnSensingComponent = CreateDefaultSubobject<UPawnSensingComponent>(TEXT("PawnSensingComponent"));
 }
 
@@ -22,6 +21,7 @@ AEnemyCharacter::AEnemyCharacter()
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
+	if (GetLocalRole() < 3) return;
 	PathfindingSubsystem = GetWorld()->GetSubsystem<UPathfindingSubsystem>();
 	CurrentPath = PathfindingSubsystem->GetRandomPath(GetActorLocation());
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemyCharacter::OnSensedPawn);
@@ -43,8 +43,7 @@ void AEnemyCharacter::TickEngage()
 			SensedCharacter->GetActorLocation());
 	MoveAlongPath();
 	Fire(SensedCharacter->GetActorLocation());
-	UE_LOG(LogTemp, Log, TEXT("what the hell"));
-	if (WeaponComponent->IsWeaponEmpty())
+	if (HasWeapon() && WeaponComponent->IsWeaponEmpty())
 		Reload();
 }
 
@@ -81,7 +80,6 @@ void AEnemyCharacter::UpdateSight()
 // Called every frame
 void AEnemyCharacter::Tick(float DeltaTime)
 {
-	UE_LOG(LogTemp, Log, TEXT("%i"), GetLocalRole());
 	if (GetLocalRole() < 3) return;
 	
 	Super::Tick(DeltaTime);
