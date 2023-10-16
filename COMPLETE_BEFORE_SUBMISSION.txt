@@ -1,0 +1,8 @@
+Sherwin Eskandari 24562353
+
+# Enter the level that you believe you have achieved in the lab exercises
+# e.g. -, F, P, C, D, HD, HD+
+
+Level achieved: HD+ besides one thing in the D section. 
+NavigationNode actors still exist in the client when running as a dedicated server ;( idk why, im gonna ask in class
+

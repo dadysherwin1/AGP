@@ -2,8 +2,11 @@
 
 
 #include "HealthComponent.h"
+
+#include "EnemyCharacter.h"
 #include "Net/UnrealNetwork.h"
 #include "PlayerCharacter.h"
+#include "GameFramework/GameModeBase.h"
 
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
@@ -75,6 +78,10 @@ void UHealthComponent::OnDeath()
 {
 	bIsDead = true;
 	UE_LOG(LogTemp, Log, TEXT("The character has died"));
+	if (APlayerCharacter* PlayerCharacter = Cast<APlayerCharacter>(GetOwner()))
+		PlayerCharacter->OnDeath();
+	else if (AEnemyCharacter* EnemyCharacter = Cast<AEnemyCharacter>(GetOwner()))
+		EnemyCharacter->OnDeath();
 }
 
 void UHealthComponent::UpdateHealthBar()

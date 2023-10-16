@@ -32,9 +32,9 @@ struct FAStarNode
 void UPathfindingSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-
-	PopulateNodes();
-
+	
+	if (GetWorld()->GetNetMode() != ENetMode::NM_Client)
+		PopulateNodes();
 }
 
 TArray<FVector> UPathfindingSubsystem::GetRandomPath(const FVector& StartLocation)
@@ -75,7 +75,7 @@ void UPathfindingSubsystem::PopulateNodes()
 	for (TActorIterator<ANavigationNode> It(GetWorld()); It; ++It)
 	{
 		Nodes.Add(*It);
-		UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *(*It)->GetActorNameOrLabel(), *(*It)->GetActorLocation().ToString());
+		// UE_LOG(LogTemp, Warning, TEXT("%s: %s"), *(*It)->GetActorNameOrLabel(), *(*It)->GetActorLocation().ToString());
 	}
 }
 

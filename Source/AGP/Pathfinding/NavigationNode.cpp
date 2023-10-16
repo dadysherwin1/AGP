@@ -6,9 +6,11 @@
 // Sets default values
 ANavigationNode::ANavigationNode()
 {
+	bNetLoadOnClient = false;
+	
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	
 	LocationComponent = CreateDefaultSubobject<USceneComponent>("LocationComponent");
 	SetRootComponent(LocationComponent);
 }
@@ -47,7 +49,12 @@ void ANavigationNode::ConnectToNode(ANavigationNode* OtherNode)
 void ANavigationNode::BeginPlay()
 {
 	Super::BeginPlay();
-	
+
+	// need to ask sir why clients can still see navigation nodes...
+	if (GetLocalRole() != ROLE_Authority)
+	{
+		Destroy();
+	}
 }
 
 // Called every frame

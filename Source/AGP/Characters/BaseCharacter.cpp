@@ -4,7 +4,9 @@
 #include "BaseCharacter.h"
 
 #include "HealthComponent.h"
+#include "AGP/MultiplayerGameMode.h"
 #include "AGP/Pickups/WeaponComponent.h"
+#include "GameFramework/GameModeBase.h"
 #include "Net/UnrealNetwork.h"
 
 // Sets default values
@@ -22,7 +24,6 @@ ABaseCharacter::ABaseCharacter()
 void ABaseCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	
 }
 
 void ABaseCharacter::Fire(const FVector& FireAtLocation)
@@ -84,6 +85,12 @@ void ABaseCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
+}
+
+void ABaseCharacter::OnDeath()
+{
+	if (AMultiplayerGameMode* GameMode = Cast<AMultiplayerGameMode>(GetWorld()->GetAuthGameMode()))
+		GameMode->OnDeath(this);
 }
 
 bool ABaseCharacter::HasWeapon() const

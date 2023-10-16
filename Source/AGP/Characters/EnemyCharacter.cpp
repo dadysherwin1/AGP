@@ -21,7 +21,7 @@ AEnemyCharacter::AEnemyCharacter()
 void AEnemyCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-	if (GetLocalRole() < 3) return;
+	if (GetLocalRole() != ENetRole::ROLE_Authority) return;
 	PathfindingSubsystem = GetWorld()->GetSubsystem<UPathfindingSubsystem>();
 	CurrentPath = PathfindingSubsystem->GetRandomPath(GetActorLocation());
 	PawnSensingComponent->OnSeePawn.AddDynamic(this, &AEnemyCharacter::OnSensedPawn);

@@ -18,11 +18,15 @@ APlayerCharacter::APlayerCharacter()
 
 }
 
-// Called when the game starts or when spawned
-void APlayerCharacter::BeginPlay()
+void APlayerCharacter::OnDeath()
 {
-	Super::BeginPlay();
+	if (PlayerHUD)
+		PlayerHUD->RemoveFromParent();
+	Super::OnDeath();
+}
 
+void APlayerCharacter::BeginPlayImplementation()
+{
 	// Input system
 	APlayerController* PlayerController = Cast<APlayerController>(GetController());
 	if (PlayerController)
@@ -46,6 +50,15 @@ void APlayerCharacter::BeginPlay()
 		}
 	}
 	UpdateHealthBar(1.0f);
+
+	ShowBodyMesh();
+}
+
+// Called when the game starts or when spawned
+void APlayerCharacter::BeginPlay()
+{
+	Super::BeginPlay();
+	BeginPlayImplementation();
 }
 
 // Called every frame

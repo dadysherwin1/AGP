@@ -6,6 +6,7 @@
 #include "GameFramework/GameMode.h"
 #include "MultiplayerGameMode.generated.h"
 
+class ABaseCharacter;
 /**
  * 
  */
@@ -13,5 +14,8 @@ UCLASS()
 class AGP_API AMultiplayerGameMode : public AGameMode
 {
 	GENERATED_BODY()
+
+public:
+	void OnDeath(ABaseCharacter* Character);
 	
 };
