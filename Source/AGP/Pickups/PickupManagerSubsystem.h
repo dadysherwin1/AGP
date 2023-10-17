@@ -6,6 +6,7 @@
 #include "Subsystems/WorldSubsystem.h"
 #include "PickupManagerSubsystem.generated.h"
 
+class AWeaponPickup;
 /**
  * 
  */
@@ -22,11 +23,17 @@ public:
 		return TStatId();
 	}
 
+	// week 10: polish
+	void DestroyWeaponPickup(AWeaponPickup* WeaponPickup);
+	
 protected:
 	TArray<FVector> PossibleSpawnLocations;
 	float PickupSpawnRate = 5.0f;
 	float TimeSinceLastSpawn = 0.0f;
 
+	// week 10: polish
+	TArray<AWeaponPickup*> SpawnedWeapons;
+	
 private:
 	void PopulateSpawnLocations();
 	void SpawnWeaponPickup();

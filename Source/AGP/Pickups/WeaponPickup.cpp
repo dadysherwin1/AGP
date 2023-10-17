@@ -3,6 +3,7 @@
 
 #include "WeaponPickup.h"
 
+#include "PickupManagerSubsystem.h"
 #include "AGP/Characters/PlayerCharacter.h"
 #include "Net/UnrealNetwork.h"
 
@@ -28,7 +29,8 @@ void AWeaponPickup::OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AA
 		// if (Player->HasWeapon()) return;
 		
 		Player->EquipWeapon(true, WeaponStats);
-		this->Destroy();
+		//this->Destroy();
+		GetWorld()->GetSubsystem<UPickupManagerSubsystem>()->DestroyWeaponPickup(this);
 	}
 }
 
