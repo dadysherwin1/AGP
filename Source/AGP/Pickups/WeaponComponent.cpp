@@ -2,6 +2,8 @@
 
 
 #include "WeaponComponent.h"
+
+#include "AGP/AGPGameInstance.h"
 #include "Net/UnrealNetwork.h"
 #include "AGP/Characters/BaseCharacter.h"
 #include "AGP/Characters/HealthComponent.h"
@@ -131,21 +133,21 @@ bool UWeaponComponent::FireImplementation(const FVector& BulletStart, FVector Fi
 	{
 		if (ABaseCharacter* Character = Cast<ABaseCharacter>(OutHit.GetActor()))
 		{
-			DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Green, false,
-				1, 0, 2);
+			//DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Green, false,
+			//	1, 0, 2);
 			Character->GetComponentByClass<UHealthComponent>()->ApplyDamage(WeaponStats.BaseDamage);
 		}
 		else
 		{
-			DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Orange, false,
-				1, 0, 2);
+			//DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Orange, false,
+			//	1, 0, 2);
 		}
 		OutHitLocation = OutHit.Location;
 	}
 	else
 	{
-		DrawDebugLine(GetWorld(), BulletStart, FireAtLocation, FColor::Red, false,
-			1, 0, 2);
+		//DrawDebugLine(GetWorld(), BulletStart, FireAtLocation, FColor::Red, false,
+		//	1, 0, 2);
 		OutHitLocation = FireAtLocation;
 	}
 
@@ -155,7 +157,18 @@ bool UWeaponComponent::FireImplementation(const FVector& BulletStart, FVector Fi
 
 void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation)
 {
-	DrawDebugLine(GetWorld(), BulletStart, HitLocation, FColor::Blue, false, 1);
+	// DrawDebugLine(GetWorld(), BulletStart, HitLocation, FColor::Blue, false, 1);
+	UAGPGameInstance* GameInstance = Cast<UAGPGameInstance>(GetWorld()->GetGameInstance());
+	GameInstance->SpawnGroundHitParticles(HitLocation);
+	if (ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwner()))
+	{
+		if (Character->IsLocallyControlled())
+			GameInstance->PlayGunshotSound2D();
+		else
+			GameInstance->PlayGunshotSoundAtLocation(BulletStart);
+		Character->FireWeaponGraphical();
+	}
+		
 }
 
 void UWeaponComponent::ServerFire_Implementation(const FVector& BulletStart, const FVector& FireAtLocation)

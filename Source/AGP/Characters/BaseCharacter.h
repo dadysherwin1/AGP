@@ -31,6 +31,10 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	virtual void OnDeath();
+
+	// week 10: effects
+	UFUNCTION(BlueprintImplementableEvent)
+	void FireWeaponGraphical();
 	
 protected:
 	// Called when the game starts or when spawned
