@@ -45,6 +45,11 @@ void AEnemyCharacter::TickEngage()
 	Fire(SensedCharacter->GetActorLocation());
 	if (HasWeapon() && WeaponComponent->IsWeaponEmpty())
 		Reload();
+
+	// rotate to player
+	FVector Direction = SensedCharacter->GetActorLocation() - GetActorLocation();
+	Direction.Z = 0;
+	SetActorRotation(Direction.Rotation());
 }
 
 void AEnemyCharacter::TickEvade()

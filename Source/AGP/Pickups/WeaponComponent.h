@@ -66,10 +66,10 @@ protected:
 	
 private:	
 	bool FireImplementation(const FVector& BulletStart, FVector FireAtLocation,
-		FVector& OutHitLocation);
-	void FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation);
+		FVector& OutHitLocation, int& OutHitType);
+	void FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation, const int& HitType);
 	UFUNCTION(NetMulticast, Unreliable)
-	void MulticastFire(const FVector& BulletStart, const FVector& HitLocation);
+	void MulticastFire(const FVector& BulletStart, const FVector& HitLocation, const int& HitType);
 	UFUNCTION(Server, Reliable)
 	void ServerFire(const FVector& BulletStart, const FVector& FireAtLocation);
 

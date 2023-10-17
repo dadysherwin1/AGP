@@ -32,10 +32,11 @@ void UWeaponComponent::Fire(const FVector& BulletStart, FVector FireAtLocation)
 	if (GetOwnerRole() == ROLE_Authority)
 	{
 		FVector HitLocation;
-		if (FireImplementation(BulletStart, FireAtLocation, HitLocation))
+		int HitType;
+		if (FireImplementation(BulletStart, FireAtLocation, HitLocation, HitType))
 		{
 			OnAmmoChanged();
-			MulticastFire(BulletStart, HitLocation);
+			MulticastFire(BulletStart, HitLocation, HitType);
 		}
 	}
 	else if (GetOwnerRole() == ROLE_AutonomousProxy)
@@ -110,7 +111,7 @@ void UWeaponComponent::ServerReload_Implementation()
 }
 
 bool UWeaponComponent::FireImplementation(const FVector& BulletStart, FVector FireAtLocation,
-	FVector& OutHitLocation)
+	FVector& OutHitLocation, int& OutHitType)
 {
 	// checks
 	if (TimeSinceLastShot < WeaponStats.FireRate)
@@ -136,11 +137,13 @@ bool UWeaponComponent::FireImplementation(const FVector& BulletStart, FVector Fi
 			//DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Green, false,
 			//	1, 0, 2);
 			Character->GetComponentByClass<UHealthComponent>()->ApplyDamage(WeaponStats.BaseDamage);
+			OutHitType = 2;
 		}
 		else
 		{
 			//DrawDebugLine(GetWorld(), BulletStart, OutHit.Location, FColor::Orange, false,
 			//	1, 0, 2);
+			OutHitType = 1;
 		}
 		OutHitLocation = OutHit.Location;
 	}
@@ -149,17 +152,24 @@ bool UWeaponComponent::FireImplementation(const FVector& BulletStart, FVector Fi
 		//DrawDebugLine(GetWorld(), BulletStart, FireAtLocation, FColor::Red, false,
 		//	1, 0, 2);
 		OutHitLocation = FireAtLocation;
+		OutHitType = 0;
 	}
 
 	TimeSinceLastShot = 0.0f;
 	return true;
 }
 
-void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation)
+void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, const FVector& HitLocation, const int& HitType)
 {
 	// DrawDebugLine(GetWorld(), BulletStart, HitLocation, FColor::Blue, false, 1);
 	UAGPGameInstance* GameInstance = Cast<UAGPGameInstance>(GetWorld()->GetGameInstance());
-	GameInstance->SpawnGroundHitParticles(HitLocation);
+	if (HitType > 0)
+	{
+		if (HitType == 1)
+			GameInstance->SpawnGroundHitParticles(HitLocation);
+		else if (HitType == 2)
+			GameInstance->SpawnBloodParticles(HitLocation);
+	}
 	if (ABaseCharacter* Character = Cast<ABaseCharacter>(GetOwner()))
 	{
 		if (Character->IsLocallyControlled())
@@ -174,13 +184,14 @@ void UWeaponComponent::FireVisualImplementation(const FVector& BulletStart, cons
 void UWeaponComponent::ServerFire_Implementation(const FVector& BulletStart, const FVector& FireAtLocation)
 {
 	FVector HitLocation;
-	if (FireImplementation(BulletStart, FireAtLocation, HitLocation))
-		MulticastFire(BulletStart, HitLocation);
+	int HitType;
+	if (FireImplementation(BulletStart, FireAtLocation, HitLocation, HitType))
+		MulticastFire(BulletStart, HitLocation, HitType);
 }
 
-void UWeaponComponent::MulticastFire_Implementation(const FVector& BulletStart, const FVector& HitLocation)
+void UWeaponComponent::MulticastFire_Implementation(const FVector& BulletStart, const FVector& HitLocation, const int& HitType)
 {
-	FireVisualImplementation(BulletStart, HitLocation);
+	FireVisualImplementation(BulletStart, HitLocation, HitType);
 }
 
 // Called every frame

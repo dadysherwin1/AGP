@@ -22,6 +22,7 @@ public:
 
 	// week 10: effects
 	void SpawnGroundHitParticles(const FVector& SpawnLocation);
+	void SpawnBloodParticles(const FVector& SpawnLocation);
 	void PlayGunshotSoundAtLocation(const FVector& Location);
 	void PlayGunshotSound2D();
 	
@@ -32,6 +33,8 @@ protected:
 	// week 10: effects
 	UPROPERTY(EditDefaultsOnly, Category="Particle Systems")
 	UNiagaraSystem* GroundHitParticles;
+	UPROPERTY(EditDefaultsOnly, Category="Particle Systems")
+	UNiagaraSystem* BloodParticles;
 	UPROPERTY(EditDefaultsOnly, Category="Audio")
 	USoundCue* GunshotSoundCue;
 };
