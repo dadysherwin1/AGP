@@ -10,6 +10,7 @@
 void UPickupManagerSubsystem::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	if (GetWorld()->GetNetMode() == NM_Client) return;
 
 	//if (PossibleSpawnLocations.IsEmpty())
 	//	PopulateSpawnLocations();
@@ -17,48 +18,38 @@ void UPickupManagerSubsystem::Tick(float DeltaTime)
 	TimeSinceLastSpawn += DeltaTime;
 	if (TimeSinceLastSpawn >= PickupSpawnRate)
 	{
-		TimeSinceLastSpawn -= PickupSpawnRate;
+		TimeSinceLastSpawn = 0.f;
 		SpawnWeaponPickup();
 	}
 }
 
 void UPickupManagerSubsystem::DestroyWeaponPickup(AWeaponPickup* WeaponPickup)
 {
-	if (const uint16 Index = SpawnedWeapons.Find(WeaponPickup) != INDEX_NONE)
+	for (int i = 0; i < SpawnedWeapons.Num(); i++)
 	{
-		WeaponPickup->Destroy();
-		SpawnedWeapons[Index] = nullptr;
+		if (SpawnedWeapons[i] == WeaponPickup)
+		{
+			WeaponPickup->Destroy();
+			SpawnedWeapons[i] = nullptr;
+			break;
+		}
 	}
 }
 
 void UPickupManagerSubsystem::PopulateSpawnLocations()
 {
 	// PossibleSpawnLocations.Empty();
-
 	PossibleSpawnLocations = GetWorld()->GetSubsystem<UPathfindingSubsystem>()->GetWaypointPositions();
 }
 
 void UPickupManagerSubsystem::SpawnWeaponPickup()
 {
-	if (GetWorld()->GetNetMode() == NM_Client)
-		return;
-	
-	// check if theres nodes to spawn on
-	if (PossibleSpawnLocations.IsEmpty())
-	{
-		
-		UE_LOG(LogTemp, Error, TEXT("Unable to spawn weapon pickup."));
-		return;
-	}
-	
+	// checks
+	if (GetWorld()->GetNetMode() == NM_Client) return;
+	if (PossibleSpawnLocations.IsEmpty()) return;
 	const UAGPGameInstance* GameInstance = GetWorld()->GetGameInstance<UAGPGameInstance>();
-
-	// check for nullptr
-	if (!GameInstance)
-		return;
-
+	if (!GameInstance) return;
 	
-
 	// get spawn position
 	const int NodeIndex = FMath::RandRange(0, PossibleSpawnLocations.Num()-1);
 	FVector SpawnPosition = PossibleSpawnLocations[NodeIndex];
@@ -72,16 +63,14 @@ void UPickupManagerSubsystem::SpawnWeaponPickup()
 	AWeaponPickup* Pickup = GetWorld()->SpawnActor<AWeaponPickup>(
 		GameInstance->GetWeaponPickupClass(), SpawnPosition, FRotator::ZeroRotator);
 	SpawnedWeapons[NodeIndex] = Pickup;
-	UE_LOG(LogTemp, Display, TEXT("Weapon Pickup Spawned"));
-	
 }
 
 void UPickupManagerSubsystem::OnWorldBeginPlay(UWorld& InWorld)
 {
 	Super::OnWorldBeginPlay(InWorld);
-
+	if (GetWorld()->GetNetMode() == NM_Client) return;
+	
 	PopulateSpawnLocations();
-	UE_LOG(LogTemp, Log, TEXT("%i"), PossibleSpawnLocations.Num());
 	SpawnedWeapons.Init(nullptr, PossibleSpawnLocations.Num());
 	
 	// crashes...

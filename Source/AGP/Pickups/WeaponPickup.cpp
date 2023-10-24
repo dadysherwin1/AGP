@@ -22,7 +22,7 @@ void AWeaponPickup::OnPickupOverlap(UPrimitiveComponent* OverlappedComponent, AA
                                     UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	if (GetLocalRole() != ROLE_Authority) return;
-	UE_LOG(LogTemp, Display, TEXT("Overlap event occured in WeaponPickup"));
+	// UE_LOG(LogTemp, Display, TEXT("Overlap event occured in WeaponPickup"));
 	ABaseCharacter* Player = Cast<ABaseCharacter>(OtherActor);
 	if (Player)
 	{

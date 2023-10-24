@@ -6,6 +6,7 @@
 #include "Engine/GameInstance.h"
 #include "AGPGameInstance.generated.h"
 
+class AEnemyCharacter;
 class USoundCue;
 class AWeaponPickup;
 class UNiagaraSystem;
@@ -19,6 +20,7 @@ class AGP_API UAGPGameInstance : public UGameInstance
 
 public:
 	UClass* GetWeaponPickupClass() const;
+	UClass* GetEnemyCharacterClass() const;
 
 	// week 10: effects
 	void SpawnGroundHitParticles(const FVector& SpawnLocation);
@@ -37,4 +39,7 @@ protected:
 	UNiagaraSystem* BloodParticles;
 	UPROPERTY(EditDefaultsOnly, Category="Audio")
 	USoundCue* GunshotSoundCue;
+
+	UPROPERTY(EditDefaultsOnly, Category="Character Classes")
+	TSubclassOf<AEnemyCharacter> EnemyCharacterClass;
 };

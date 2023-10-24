@@ -28,10 +28,11 @@ public:
 	
 protected:
 	TArray<FVector> PossibleSpawnLocations;
-	float PickupSpawnRate = 5.0f;
+	float PickupSpawnRate = 1.0f;
 	float TimeSinceLastSpawn = 0.0f;
 
 	// week 10: polish
+	UPROPERTY()
 	TArray<AWeaponPickup*> SpawnedWeapons;
 	
 private:

@@ -36,28 +36,28 @@ void AEnemyCharacter::TickPatrol()
 
 void AEnemyCharacter::TickEngage()
 {
-	if (!SensedCharacter)
-		return;
+	if (!SensedCharacter.IsValid()) return;
 	if (CurrentPath.Num() == 0)
 		CurrentPath = PathfindingSubsystem->GetPath(GetActorLocation(),
-			SensedCharacter->GetActorLocation());
+			SensedCharacter.Get()->GetActorLocation());
 	MoveAlongPath();
-	Fire(SensedCharacter->GetActorLocation());
+	Fire(SensedCharacter.Get()->GetActorLocation());
 	if (HasWeapon() && WeaponComponent->IsWeaponEmpty())
 		Reload();
 
 	// rotate to player
-	FVector Direction = SensedCharacter->GetActorLocation() - GetActorLocation();
+	if (!SensedCharacter.IsValid()) return;
+	FVector Direction = SensedCharacter.Get()->GetActorLocation() - GetActorLocation();
 	Direction.Z = 0;
 	SetActorRotation(Direction.Rotation());
 }
 
 void AEnemyCharacter::TickEvade()
 {
-	if (!SensedCharacter) return;
+	if (!SensedCharacter.IsValid()) return;
 	if (CurrentPath.Num() == 0)
 		CurrentPath = PathfindingSubsystem->GetPathAway(GetActorLocation(),
-			SensedCharacter->GetActorLocation());
+			SensedCharacter.Get()->GetActorLocation());
 	MoveAlongPath();
 }
 
@@ -72,10 +72,10 @@ void AEnemyCharacter::OnSensedPawn(APawn* Pawn)
 
 void AEnemyCharacter::UpdateSight()
 {
-	if (!SensedCharacter)
+	if (!SensedCharacter.IsValid())
 		return;
 
-	if (!PawnSensingComponent->HasLineOfSightTo(SensedCharacter))
+	if (!PawnSensingComponent->HasLineOfSightTo(SensedCharacter.Get()))
 	{
 		UE_LOG(LogTemp, Log, TEXT("Lost Player"));
 		SensedCharacter = nullptr;
@@ -92,7 +92,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	
 	if (CurrentState == EEnemyState::Patrol)
 	{
-		if (SensedCharacter)
+		if (SensedCharacter.IsValid())
 		{
 			CurrentPath.Empty();
 			if (GetComponentByClass<UHealthComponent>()->GetCurrentHealthPercentage() >= .4f)
@@ -106,7 +106,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	}	
 	else if (CurrentState == EEnemyState::Engage)
 	{
-		if (SensedCharacter == nullptr)
+		if (!SensedCharacter.IsValid())
 		{
 			CurrentState = EEnemyState::Patrol;
 		}
@@ -118,7 +118,7 @@ void AEnemyCharacter::Tick(float DeltaTime)
 	}	
 	else
 	{
-		if (!SensedCharacter)
+		if (!SensedCharacter.IsValid())
 		{
 			CurrentState = EEnemyState::Patrol;
 		}

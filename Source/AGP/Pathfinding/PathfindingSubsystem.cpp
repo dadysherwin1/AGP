@@ -63,8 +63,12 @@ TArray<FVector> UPathfindingSubsystem::GetWaypointPositions()
 	TArray<FVector> WaypointPositions;
 	for (TActorIterator<ANavigationNode> It(GetWorld()); It; ++It)
 	{
+		UE_LOG(LogTemp, Log, TEXT("DID U GET UR BOGOS BINTED"));
+		UE_LOG(LogTemp, Log, TEXT("DID THIS WORK"));
 		WaypointPositions.Add(It->GetActorLocation());
 	}
+
+	UE_LOG(LogTemp, Log, TEXT("Oi bloody hell mate: %i"), WaypointPositions.Num());
 	return WaypointPositions;
 }
 

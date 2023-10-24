@@ -39,7 +39,7 @@ protected:
 	UPROPERTY(EditAnywhere)
 	UPawnSensingComponent* PawnSensingComponent;
 	UPROPERTY()
-	APlayerCharacter* SensedCharacter = nullptr;
+	TWeakObjectPtr<APlayerCharacter> SensedCharacter = nullptr;
 	
 	UPROPERTY(EditAnywhere)
 	EEnemyState CurrentState = EEnemyState::Patrol;
